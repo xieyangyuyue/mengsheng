@@ -4,18 +4,23 @@
         <!-- Input 输入框
          model-value / v-model	绑定值 
          v-model="name" v-model="sex"监控输入框
-         输入传入data return 再传入loadpost中的param-->
+         输入传入data return 再传入loadpost中的param
+         @change  enter键触发-->
         <div style="margin-bottom: 5px;">
-            <el-input v-model="name" placeholder="请输入名字" suffix-icon="Search" style="width: 200px;"></el-input>
+            <el-input v-model="name" placeholder="请输入名字" suffix-icon="Search" style="width: 200px;"
+                @change="loadPost"></el-input>
 
+            <!-- Select 选择器​
+            当选项过多时，使用下拉菜单展示并选择内容。 -->
             <el-select v-model="sex" filterable placeholder="请选择性别" suffix-icon="User"
                 style="width: 200px;margin-left: 5px ;">
-
+                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
             </el-select>
             <!-- 调用loadPost查询  
             传入参数根据v-model="name" v-model="sex"中的name sex返回后端进行 -->
             <el-button type="primary" style="margin-left: 5px ;" @click="loadPost">查询</el-button>
-            <el-button type="success">重置</el-button>
+            <el-button type="success" @click="resetParam">重置</el-button>
             <el-button type="danger">新增</el-button>
         </div>
 
@@ -119,6 +124,17 @@ export default {
             //绑定监控name sex
             name: '',
             sex: '',
+            // Select 选择器​当选项过多时，
+            // 使用下拉菜单展示并选择内容。
+            sexs: [
+                {
+                    value: '0',
+                    label: '男'
+                }, {
+                    value: '1',
+                    label: '女'
+                }
+            ],
         }
     },
     methods: {
@@ -126,7 +142,11 @@ export default {
 
 
 
-
+        // input查询框重置 将传入的值赋值为空
+        resetParam() {
+            this.name = '',
+                this.sex = ''
+        },
         //关于分页函数 handleSizeChange，handleCurrentChange
         //改变每页条数，传值val，将pageSize改为val
         handleSizeChange(val) {
