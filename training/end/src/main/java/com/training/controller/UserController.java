@@ -26,7 +26,11 @@ public class UserController {
     public List<User> list() {
         return userService.listAll();
     }
-
+    //表单新增 将表单数据写入数据库
+    @PostMapping("/save")
+    public Result save(@RequestBody User user) {
+        return userService.save(user) ? Result.success() : Result.fail();
+    }
     /**
      * 查询（模糊，精确） like eq
      *

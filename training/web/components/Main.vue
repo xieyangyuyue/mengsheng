@@ -114,13 +114,50 @@
         <!-- Dialog对话框 Dialog 弹出一个对话框
      model-value / v-model	是否显示 Dialog	boolean 
      centerDialogVisible  新增dialog是否可见-->
-        <el-dialog v-model="centerDialogVisible" title="提示" width="500" center :before-close="handleClose">
-            <span>el-dialog对话框</span>
+        <el-dialog v-model="centerDialogVisible" title="新增" width="500" center :before-close="handleClose">
+            <!-- 新增表单 
+             form动态关联
+             model	表单数据对象	rules	表单验证规则-->
+            <el-form ref="form" :rules="rules" :model="form" label-width="auto" style="max-width: 600px">
+                <!-- 账号 -->
+                <el-form-item label="账号" style="width: 60%;" prop="no">
+                    <el-input v-model="form.no" />
+                </el-form-item>
+
+                <!-- 名字 -->
+                <el-form-item label="名字" style="width: 60%;" prop="name">
+                    <el-input v-model="form.name" />
+                </el-form-item>
+
+                <!-- 密码 -->
+                <el-form-item label="密码" style="width: 60%;" prop="password">
+                    <el-input v-model="form.password" />
+                </el-form-item>
+
+                <!-- 年龄 -->
+                <el-form-item label="年龄" style="width: 60%;" prop="age">
+                    <el-input v-model="form.age" />
+                </el-form-item>
+                <!-- 性别 -->
+                <el-form-item label="性别">
+                    <!-- 单选框 -->
+                    <el-radio-group v-model="form.sex">
+                        <el-radio value="0">男</el-radio>
+                        <el-radio value="1">女</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
+                <!-- 电话 -->
+                <el-form-item label="电话" style="width: 60%;" prop="phone">
+                    <el-input v-model="form.phone" />
+                </el-form-item>
+
+            </el-form>
             <!-- 插槽footer	Dialog 按钮操作区的内容 -->
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="centerDialogVisible = false">取消</el-button>
-                    <el-button type="primary">
+                    <el-button type="primary" @click="save">
                         确定
                     </el-button>
                 </div>
@@ -160,13 +197,43 @@ export default {
             ],
             //新增dialog是否可见
             centerDialogVisible: false,
+            // 新增表单 form动态关联
+            form: {
+                id: '',
+                no: '',
+                name: '',
+                password: '',
+                age: '',
+                phone: '',
+                sex: '0',
+                roleId: '1'
+            },
         }
     },
     methods: {
+        //新增表单提交后端
+        save() {
+            //表单数据是dialog数据
+            this.$http.post('user/save', this.form).then(res => res.data).then(res => {
+                // console.log(res)
+                if (res.code == 200) {
+                    this.$message({
+                        message: '操作成功!',
+                        type: 'success'
+                    });
+                    this.centerDialogVisible = false
+                    this.loadPost()
+                }
+                else {
+                    this.$message({
+                        message: '操作失败!',
+                        type: 'error'
+                    });
+                }
+            })
+        },
 
-
-
-        //新增,
+        //表单新增,
         add() {
             //展示dialog对话框
             this.centerDialogVisible = true
