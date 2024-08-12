@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <Indextest></Indextest>
+    <!-- 路由默认跳转 -->
+    <!-- <Indextest></Indextest> -->
+    <router-view></router-view>
   </div>
 </template>
 
