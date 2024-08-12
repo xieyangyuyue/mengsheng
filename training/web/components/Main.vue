@@ -1,6 +1,10 @@
 <template>
     <div>
         <!-- 列表查询 -->
+        <!-- Input 输入框
+         model-value / v-model	绑定值 
+         v-model="name" v-model="sex"监控输入框
+         输入传入data return 再传入loadpost中的param-->
         <div style="margin-bottom: 5px;">
             <el-input v-model="name" placeholder="请输入名字" suffix-icon="Search" style="width: 200px;"></el-input>
 
@@ -8,7 +12,9 @@
                 style="width: 200px;margin-left: 5px ;">
 
             </el-select>
-            <el-button type="primary" style="margin-left: 5px ;">查询</el-button>
+            <!-- 调用loadPost查询  
+            传入参数根据v-model="name" v-model="sex"中的name sex返回后端进行 -->
+            <el-button type="primary" style="margin-left: 5px ;" @click="loadPost">查询</el-button>
             <el-button type="success">重置</el-button>
             <el-button type="danger">新增</el-button>
         </div>
@@ -24,8 +30,13 @@
             <el-table-column prop="name" label="姓名" width="160" />
             <el-table-column prop="age" label="年龄" width="160" />
             <el-table-column prop="sex" label="性别" width="160">
-                <!-- 插槽default -->
+
+
+
+                <!-- 插槽default 
+                 自定义列的内容-->
                 <template #default="scope">
+                    <!-- el-tag用于标记和选择 -->
                     <!-- type	Tag 的类型 
                  disable-transitions	是否禁用渐变动画	false-->
                     <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
@@ -35,27 +46,40 @@
                         '男'
                         }}</el-tag>
                 </template>
+
+
             </el-table-column>
             <el-table-column prop="roleId" label="角色" width="160">
+
+
                 <!-- 展示角色 -->
                 <template #default="scope">
                     <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
                     <el-tag :type="scope.row.roleId === 0 ? 'danger' : (scope.row.roleId === 1 ? 'primary' : 'warning')"
                         disable-transition>{{ scope.row.roleId === 0 ? '超级管理员' :
                             (scope.row.roleId === 1 ? '管理员' : '用户') }}</el-tag>
-                </template></el-table-column>
+                </template>
+
+            </el-table-column>
             <el-table-column prop="phone" label="电话" width="160" />
             <el-table-column prop="operate" label="操作" width="165">
+
+
                 <template #default="scope">
                     <!-- el-button按钮 -->
                     <el-button size="small" type="primary">编辑</el-button>
-                    <el-popconfirm title="确定删除吗?">
+                    <!-- Popconfirm 气泡确认框 
+                     confirm-button-text="确定" 确认文字
+                     cancel-button-text="取消"  取消文字-->
+                    <el-popconfirm confirm-button-text="确定" cancel-button-text="取消" title="确定删除吗?">
+                        <!-- 插槽reference	触发 Popconfirm 显示的 HTML 元素 -->
                         <template #reference>
                             <el-button size="small" type="danger">删除</el-button>
                         </template>
                     </el-popconfirm>
-
                 </template>
+
+
             </el-table-column>
         </el-table>
 
@@ -91,6 +115,10 @@ export default {
             pageSize: 10,
             pageNum: 1,
             total: 0,
+            //input列表查询
+            //绑定监控name sex
+            name: '',
+            sex: '',
         }
     },
     methods: {
@@ -129,6 +157,11 @@ export default {
                 {
                     pageSize: this.pageSize,
                     pageNum: this.pageNum,
+                    //将前端监控的值传给param
+                    param: {
+                        name: this.name,
+                        sex: this.sex
+                    }
                 }).then(res => res.data).then(res => {
                     // res => res.data过滤后端返回数据包含code，msg，data等
                     console.log(res);
