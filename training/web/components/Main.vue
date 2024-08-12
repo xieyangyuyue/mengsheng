@@ -21,7 +21,8 @@
             传入参数根据v-model="name" v-model="sex"中的name sex返回后端进行 -->
             <el-button type="primary" style="margin-left: 5px ;" @click="loadPost">查询</el-button>
             <el-button type="success" @click="resetParam">重置</el-button>
-            <el-button type="danger">新增</el-button>
+            <!-- add函数只是激发dialog对话框 展示新增表单 -->
+            <el-button type="danger" @click="add">新增</el-button>
         </div>
 
         <!-- data数据来源于tableData 
@@ -104,6 +105,28 @@
             :total="total">
         </el-pagination>
 
+
+
+
+
+
+
+        <!-- Dialog对话框 Dialog 弹出一个对话框
+     model-value / v-model	是否显示 Dialog	boolean 
+     centerDialogVisible  新增dialog是否可见-->
+        <el-dialog v-model="centerDialogVisible" title="提示" width="500" center :before-close="handleClose">
+            <span>el-dialog对话框</span>
+            <!-- 插槽footer	Dialog 按钮操作区的内容 -->
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="centerDialogVisible = false">取消</el-button>
+                    <el-button type="primary">
+                        确定
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+
     </div>
 </template>
 
@@ -135,13 +158,22 @@ export default {
                     label: '女'
                 }
             ],
+            //新增dialog是否可见
+            centerDialogVisible: false,
         }
     },
     methods: {
 
 
 
-
+        //新增,
+        add() {
+            //展示dialog对话框
+            this.centerDialogVisible = true
+            this.$nextTick(() => {
+                this.resetForm();
+            })
+        },
         // input查询框重置 将传入的值赋值为空
         resetParam() {
             this.name = '',
@@ -173,7 +205,7 @@ export default {
             //axios实现post请求
             //实现分页查询
             this.$http.post('user/listPage',
-                // 传入json形式的请求体，分页传入条数和页数
+                // 传入json形式的请求体 分页传入条数和页数
                 {
                     pageSize: this.pageSize,
                     pageNum: this.pageNum,
@@ -205,7 +237,7 @@ export default {
     // 3、这是遇到的第三个生命周期函数,表示 模板已经在内存中编辑完成了,但是尚未把模板渲染到 页面中，
     // 在 beforeMount 执行的时候,页面中的元素,还没有被真正替换过来,只是之前写的一些模板字符串
     beforeMount() {
-        // 调用loadGet，loadPost
+        // 调用loadGet loadPost
         // this.loadGet();
         this.loadPost();
     }
