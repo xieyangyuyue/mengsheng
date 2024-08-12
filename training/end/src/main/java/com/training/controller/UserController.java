@@ -21,20 +21,39 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    //登录
+    @PostMapping("/login")
+    public Result login(@RequestBody User user) {
+        //后端获取账号 姓名
+        //返回从数据库拿到符合条件的list
+        List list = userService.lambdaQuery()
+                .eq(User::getNo, user.getNo())//匹配账号
+                .eq(User::getPassword, user.getPassword())//匹配密码
+                .list();
+        if (!list.isEmpty()) {
+            return Result.success(list.get(0));
+        } else {
+            return Result.fail();
+        }
+
+    }
+
     //返回所有数据
     @GetMapping("/list")
     public List<User> list() {
         return userService.listAll();
     }
+
     //表单新增 将表单数据写入数据库
     @PostMapping("/save")
     public Result save(@RequestBody User user) {
         return userService.save(user) ? Result.success() : Result.fail();
     }
+
     /**
      * 查询（模糊，精确） like eq
-     *
      */
+
     @PostMapping("/listP")
     public Result listP(@RequestBody User user) {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
