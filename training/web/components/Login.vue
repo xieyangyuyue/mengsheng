@@ -192,23 +192,37 @@ export default {
         },
         //新增表单提交后端
         save() {
-            //this.form表单数据是dialog数据
-            this.$http.post('user/save', this.registerform).then(res => res.data).then(res => {
-                // console.log(res)
-                if (res.code == 200) {
-                    this.$message({
-                        message: '操作成功!',
-                        type: 'success'
-                    });
-                    this.registerDialogVisible = false
+            this.$refs.registerform.validate((valid) => {
+                // 校验合法
+                if (valid) {
+                    //this.form表单数据是dialog数据
+                    this.$http.post('user/save', this.registerform).then(res => res.data).then(res => {
+                        // console.log(res)
+                        if (res.code == 200) {
+                            this.$message({
+                                message: '注册成功!',
+                                type: 'success'
+                            });
+                            this.registerDialogVisible = false
+                        }
+                        else {
+                            this.$message({
+                                message: '操作失败!',
+                                type: 'error'
+                            });
+                        }
+                    })
                 }
+                // 校验不合法
                 else {
                     this.$message({
-                        message: '操作失败!',
+                        message: '校验失败 请填写完整数据',
                         type: 'error'
                     });
+                    this.confirm_disable = false;
+                    return false;
                 }
-            })
+            });
         },
 
         //注册下拉dialog
