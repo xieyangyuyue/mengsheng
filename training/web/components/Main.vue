@@ -117,7 +117,11 @@
         <el-dialog v-model="centerDialogVisible" title="新增" width="500" center :before-close="handleClose">
             <!-- 新增表单 
              form动态关联
-             model	表单数据对象	rules	表单验证规则-->
+             model	表单数据对象	
+             rules	表单验证规则
+             Form 组件提供了表单验证的功能，
+             只需为 rules 属性传入约定的验证规则，
+             并将 form-Item 的 prop 属性设置为需要验证的特殊键值即可-->
             <el-form ref="form" :rules="rules" :model="form" label-width="auto" style="max-width: 600px">
                 <!-- 账号 -->
                 <el-form-item label="账号" style="width: 60%;" prop="no">
@@ -171,6 +175,37 @@
 export default {
     name: "Main",
     data() {
+        //校验年龄 checkAge
+        let checkAge = (rule, value, callback) => {
+            if (value > 150) {
+                callback(new Error('年龄输入过大'));
+            }
+            else {
+                callback();
+            }
+        };
+
+        // 校验账号的唯一性 checkDuplicate 
+        let checkDuplicate = (rule, value, callback) => {
+            if (this.form.id) {
+                return callback();
+            }
+
+            this.$http.get("/user/findByNo?no=" + this.form.no).then(res => res.data)
+                .then(res => {
+                    if (res.code != 200) {
+                        callback();
+                    }
+                    else {
+                        callback(new Error('账号已存在'));
+                    }
+                })
+        };
+
+
+
+
+
 
         return {
             //列表数据,以数组形式接收
@@ -208,31 +243,73 @@ export default {
                 sex: '0',
                 roleId: '1'
             },
+
+            //表单规则校验
+            rules: {
+                no: [
+                    { required: true, message: '请输入账号', trigger: 'blur' },
+                    { min: 3, max: 8, message: '长度在 3 到 8个字符', trigger: 'blur' },
+                    { validator: checkDuplicate, trigger: 'blur' }
+                ],
+                name: [
+                    { required: true, message: '请输入名字', trigger: 'blur' },
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { min: 3, max: 8, message: '长度在 3 到 8个字符', trigger: 'blur' }
+                ],
+                age: [
+                    { required: true, message: '请输入年龄', trigger: 'blur' },
+                    { min: 1, max: 3, message: '长度在 1 到 3个位', trigger: 'blur' },
+                    { pattern: /^([1-9][0-9]*){1,3}$/, message: '年龄必须为正整数', trigger: "blur" },
+                    { validator: checkAge, trigger: 'blur' }
+                ],
+                phone: [
+                    { required: true, message: '手机号不能为空', trigger: "blur" },
+                    { pattern: /^2[3|4|5|6|7|8|9][0-9]\d{3}$/, message: "请输入正确的手机号", trigger: "blur" }
+                ]
+
+            }
         }
     },
     methods: {
         //新增表单提交后端
         save() {
-            //表单数据是dialog数据
-            this.$http.post('user/save', this.form).then(res => res.data).then(res => {
-                // console.log(res)
-                if (res.code == 200) {
-                    this.$message({
-                        message: '操作成功!',
-                        type: 'success'
-                    });
-                    this.centerDialogVisible = false
-                    this.loadPost()
+            this.$refs.form.validate((valid) => {
+                // 校验合法 表单数据合法才能提交请求
+                if (valid) {
+                    //this.form表单数据是dialog数据
+                    this.$http.post('user/save', this.form).then(res => res.data).then(res => {
+                        // console.log(res)
+                        if (res.code == 200) {
+                            this.$message({
+                                message: '新增成功!',
+                                type: 'success'
+                            });
+                            this.centerDialogVisible = false
+                        }
+                        else {
+                            this.$message({
+                                message: '操作失败!',
+                                type: 'error'
+                            });
+                        }
+                    })
                 }
+                // 校验不合法
                 else {
                     this.$message({
-                        message: '操作失败!',
+                        message: '校验失败 请填写完整数据',
                         type: 'error'
                     });
+                    return false;
                 }
-            })
+            });
         },
-
+        //重置表单
+        resetForm() {
+            this.$refs.form.resetFields();
+        },
         //表单新增,
         add() {
             //展示dialog对话框
