@@ -15,14 +15,80 @@
                     </el-form-item>
 
                     <el-form-item>
-                        <!-- disabled	按钮已禁用 绑定confirm_disable使之不能多次提交 -->
-                        <el-button type="primary" @click="confirm" :disabled="confirm_disable">确定</el-button>
+                        <!-- 在按钮外面包裹一个 div，并设置 margin-right 属性来创建间距 -->
+                        <div style="margin-right: 200px;"> <!-- 间距为20px，你可以根据需要调整 -->
+                            <el-button type="primary" @click="confirm" :disabled="confirm_disable">确定</el-button>
+                        </div>
+                        <el-button type="danger" @click="register" :disabled="confirm_disable">注册</el-button>
                     </el-form-item>
+
 
                 </el-form>
             </div>
         </div>
+
+
+
+
+
+        <!-- Dialog对话框 Dialog 弹出一个对话框
+     model-value / v-model	是否显示 Dialog	boolean 
+     centerDialogVisible  新增dialog是否可见-->
+        <el-dialog v-model="registerDialogVisible" title="注册" width="500" center :before-close="handleClose">
+            <!-- 新增表单 
+             form动态关联
+             model	表单数据对象	rules	表单验证规则-->
+            <el-form ref="registerform" :rules="registerrules" :model="registerform" label-width="auto"
+                style="max-width: 600px">
+                <!-- 账号 -->
+                <el-form-item label="账号" style="width: 60%;" prop="no">
+                    <el-input v-model="registerform.no" />
+                </el-form-item>
+
+                <!-- 名字 -->
+                <el-form-item label="名字" style="width: 60%;" prop="name">
+                    <el-input v-model="registerform.name" />
+                </el-form-item>
+
+                <!-- 密码 -->
+                <el-form-item label="密码" style="width: 60%;" prop="password">
+                    <el-input v-model="registerform.password" />
+                </el-form-item>
+
+                <!-- 年龄 -->
+                <el-form-item label="年龄" style="width: 60%;" prop="age">
+                    <el-input v-model="registerform.age" />
+                </el-form-item>
+                <!-- 性别 -->
+                <el-form-item label="性别">
+                    <el-radio-group v-model="registerform.sex">
+                        <el-radio value="0">男</el-radio>
+                        <el-radio value="1">女</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
+                <!-- 电话 -->
+                <el-form-item label="电话" style="width: 60%;" prop="phone">
+                    <el-input v-model="registerform.phone" />
+                </el-form-item>
+
+            </el-form>
+
+            <!-- 插槽footer	Dialog 按钮操作区的内容 -->
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="registerDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="save">
+                        确定
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
+
+
     </div>
+
+
 </template>
 
 
@@ -30,7 +96,35 @@
 export default {
     name: "Login",
     data() {
+
+        //校验年龄 checkAge
+        let checkAge = (rule, value, callback) => {
+            if (value > 150) {
+                callback(new Error('年龄输入过大'));
+            }
+            else {
+                callback();
+            }
+        };
+
+        // 校验账号的唯一性 checkDuplicate 
+        let checkDuplicate = (rule, value, callback) => {
+            if (this.registerform.id) {
+                return callback();
+            }
+
+            this.$http.get("/user/findByNo?no=" + this.registerform.no).then(res => res.data)
+                .then(res => {
+                    if (res.code != 200) {
+                        callback();
+                    }
+                    else {
+                        callback(new Error('账号已存在'));
+                    }
+                })
+        };
         return {
+            registerDialogVisible: false,
             confirm_disable: false,
             loginForm: {
                 no: '',
@@ -43,10 +137,88 @@ export default {
                 password: [
                     { required: true, message: '请输入密码', trigger: 'blur' },
                 ]
+            },
+            //注册校验规则
+            registerrules: {
+                no: [
+                    { required: true, message: '请输入账号', trigger: 'blur' },
+                    { min: 3, max: 8, message: '长度在 3 到 8个字符', trigger: 'blur' },
+                    { validator: checkDuplicate, trigger: 'blur' }
+                ],
+                name: [
+                    { required: true, message: '请输入名字', trigger: 'blur' },
+                ],
+                password: [
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { min: 3, max: 8, message: '长度在 3 到 8个字符', trigger: 'blur' }
+                ],
+                age: [
+                    { required: true, message: '请输入年龄', trigger: 'blur' },
+                    { min: 1, max: 3, message: '长度在 1 到 3个位', trigger: 'blur' },
+                    { pattern: /^([1-9][0-9]*){1,3}$/, message: '年龄必须为正整数', trigger: "blur" },
+                    { validator: checkAge, trigger: 'blur' }
+                ],
+                phone: [
+                    { required: true, message: '手机号不能为空', trigger: "blur" },
+                    { pattern: /^2[3|4|5|6|7|8|9][0-9]\d{3}$/, message: "请输入正确的手机号", trigger: "blur" }
+                ]
+
+            },
+            //注册表单
+            registerform: {
+                id: '',
+                no: '',
+                name: '',
+                password: '',
+                age: '',
+                phone: '',
+                sex: '0',
+                roleId: '2'
             }
         }
     },
     methods: {
+        //对话框关闭判定
+        handleClose(done) {
+            this.$confirm('确认关闭？')
+                .then(_ => {
+                    done();
+                })
+                .catch(_ => { });
+        },
+        //重置表单
+        resetForm() {
+            this.$refs.registerform.resetFields();
+        },
+        //新增表单提交后端
+        save() {
+            //this.form表单数据是dialog数据
+            this.$http.post('user/save', this.registerform).then(res => res.data).then(res => {
+                // console.log(res)
+                if (res.code == 200) {
+                    this.$message({
+                        message: '操作成功!',
+                        type: 'success'
+                    });
+                    this.registerDialogVisible = false
+                }
+                else {
+                    this.$message({
+                        message: '操作失败!',
+                        type: 'error'
+                    });
+                }
+            })
+        },
+
+        //注册下拉dialog
+        register() {
+            this.registerDialogVisible = true
+            this.$nextTick(() => {
+                this.resetForm();
+            })
+        },
+
 
         confirm() {
             // 确定时不能再次点击 认证失败时则可以
