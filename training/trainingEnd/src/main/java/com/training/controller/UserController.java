@@ -21,23 +21,6 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    //登录
-    @PostMapping("/login")
-    public Result login(@RequestBody User user) {
-        //后端获取账号 姓名
-        //返回从数据库拿到符合条件的list
-        List list = userService.lambdaQuery()
-                .eq(User::getNo, user.getNo())//匹配账号
-                .eq(User::getPassword, user.getPassword())//匹配密码
-                .list();
-        if (!list.isEmpty()) {
-            return Result.success(list.get(0));
-        } else {
-            return Result.fail();
-        }
-
-    }
-
     //返回所有数据
     @GetMapping("/list")
     public List<User> list() {
@@ -49,6 +32,52 @@ public class UserController {
     public Result save(@RequestBody User user) {
         return userService.save(user) ? Result.success() : Result.fail();
     }
+
+    //更新
+    @PostMapping("/update")
+    public Result update(@RequestBody User user) {
+        return userService.updateById(user) ? Result.success() : Result.fail();
+    }
+
+    //删除
+    @GetMapping("/delete")
+    public Result delete(@RequestParam Integer id) {
+        return userService.removeById(id) ? Result.success() : Result.fail();
+    }
+
+    //新增或修改
+    @PostMapping("/saveOrMod")
+    public Result saveOrMod(@RequestBody User user) {
+        return userService.saveOrUpdate(user) ? Result.success() : Result.fail();
+    }
+
+
+    //登录
+    @PostMapping("/login")
+    public Result login(@RequestBody User user) {
+        /**
+         * lambdaQuery
+         */
+        //后端获取账号 姓名
+        //返回从数据库拿到符合条件的list
+        List list = userService.lambdaQuery()
+                .eq(User::getNo, user.getNo())//匹配账号
+                .eq(User::getPassword, user.getPassword())//匹配密码
+                .list();
+        if (!list.isEmpty()) {
+            return Result.success(list.get(0));
+        } else {
+            return Result.fail();
+        }
+    }
+
+    //根据no查询是否有重复用户名
+    @GetMapping("/findByNo")
+    public Result findByNo(@RequestParam String no) {
+        List list = userService.lambdaQuery().eq(User::getNo, no).list();
+        return !list.isEmpty() ? Result.success(list) : Result.fail();
+    }
+
 
     /**
      * 查询（模糊，精确） like eq
