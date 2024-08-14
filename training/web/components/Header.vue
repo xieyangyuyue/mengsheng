@@ -50,7 +50,7 @@ export default {
     },
     //个人中心
     toUser() {
-      console.log("touser");
+      this.$router.push('/Home')
     },
     //退出登录
     logout() {
@@ -77,6 +77,9 @@ export default {
       })
     },
 
+  },
+  create() {
+    this.$router.push("/Home")
   }
 }
 </script>

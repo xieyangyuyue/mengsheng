@@ -3,17 +3,26 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 
 const routes = [
-    //登陆路由
     {
         path: '/',
         name: 'login',
         component: () => import('../components/Login.vue')
     },
-    //首页路由
     {
         path: '/Indextest',
         name: 'Indextest',
-        component: () => import('../components/Indextest.vue')
+        component: () => import('../components/Indextest.vue'),
+        children: [
+            {
+                path: '/Home',
+                name: 'Home',
+                meta: {
+                    title: '首页'
+                },
+                component: () => import('../components/Home.vue')
+            }
+
+        ]
     }
 ];
 

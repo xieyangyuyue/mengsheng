@@ -21,8 +21,8 @@
 
             <el-main style="height:100%;">
                 <el-scrollbar>
-                    <Main></Main>
-                    <!-- <router-view></router-view> -->
+                    <!-- <Main></Main> -->
+                    <router-view></router-view>
                 </el-scrollbar>
             </el-main>
         </el-container>
