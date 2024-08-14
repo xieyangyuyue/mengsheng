@@ -246,7 +246,7 @@ export default {
                 age: '',
                 phone: '',
                 sex: '0',
-                roleId: '1'
+                roleId: '2'
             },
 
             //表单规则校验
@@ -431,7 +431,8 @@ export default {
                     //将前端监控的值传给param
                     param: {
                         name: this.name,
-                        sex: this.sex
+                        sex: this.sex,
+                        roleId: '2'
                     }
                 }).then(res => res.data).then(res => {
                     // res => res.data过滤后端返回数据包含code，msg，data等

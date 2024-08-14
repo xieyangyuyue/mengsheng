@@ -109,7 +109,7 @@ public class UserController {
         //从前端传来的param的  name  sex  进行 lambdaQueryWrapper
         String name = (String) param.get("name");
         String sex = (String) param.get("sex");
-//        String roleId = (String w) param.get("roleId");
+        String roleId = (String) param.get("roleId");
 
         /**
          * setCurrent 设置 页数
@@ -128,6 +128,9 @@ public class UserController {
         // 判断是否为空
         if (StringUtils.isNotBlank(sex) && !"null".equals(sex)) {
             lambdaQueryWrapper.like(User::getSex, sex);
+        }
+        if (StringUtils.isNotBlank(roleId)) {
+            lambdaQueryWrapper.eq(User::getRoleId, roleId);
         }
         //封装查询结果
         IPage<User> result = userService.page(page, lambdaQueryWrapper);
