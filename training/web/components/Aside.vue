@@ -10,30 +10,23 @@
     <!-- 通过 el-menu-item-group 组件可以实现菜单进行分组，
     分组名可以通过 title 属性直接设定，也可以通过具名 slot 来设定。 -->
     <el-menu active-text-color="#ffd04b" background-color="#545c64" text-color="#fff" style="height: 100vh;"
-        default-active="/Home" :collapse="isCollapse" :collapse-transition="false">
+        default-active="/Home" :collapse="isCollapse" :collapse-transition="false" router>
         <!-- 左侧Menu 菜单 -->
         <!-- index 	唯一标志 -->
         <el-menu-item index="/Home">
             <el-icon>
                 <HomeFilled />
             </el-icon>
-
-            <span default="title">首页</span>
+            <span slot="title">首页</span>
         </el-menu-item>
-        <el-menu-item index="/test1">
+
+        <el-menu-item :index="'/' + item.menuclick" v-for="(item, i) in menus" :key="i">
             <el-icon>
                 <Flag />
             </el-icon>
-            <span default="title">管理者</span>
-
+            <span slot="title">{{ item.menuname }}</span>
         </el-menu-item>
-        <el-menu-item index="/rest2">
-            <el-icon>
-                <Flag />
-            </el-icon>
-            <span default="title">用户</span>
 
-        </el-menu-item>
     </el-menu>
 </template>
 
@@ -44,7 +37,16 @@ export default {
     name: "Aside",
     data() {
         return {
-
+            menus: [
+                {
+                    menuclick: 'Admin',
+                    menuname: '管理员管理',
+                },
+                {
+                    menuclick: 'User',
+                    menuname: '用户管理',
+                }
+            ]
         }
     },
     props: {

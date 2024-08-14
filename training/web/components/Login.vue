@@ -161,7 +161,7 @@ export default {
                 ],
                 phone: [
                     { required: true, message: '手机号不能为空', trigger: "blur" },
-                    { pattern: /^2[3|4|5|6|7|8|9][0-9]\d{3}$/, message: "请输入正确的手机号", trigger: "blur" }
+                    { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号", trigger: "blur" }
                 ]
 
             },
