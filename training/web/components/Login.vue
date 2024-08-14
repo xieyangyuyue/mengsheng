@@ -263,8 +263,8 @@ export default {
 
                             // JSON.stringify(res.data) 是一个将 res.data 对象转换成 JSON 字符串的过程。
                             // 因为 sessionStorage 只能存储字符串，所以如果需要保存对象或数组，就需要先将它们转换成字符串。
-                            sessionStorage.setItem("LoginUser", JSON.stringify(res.data))
-                            // sessionStorage.setItem("CurUser", JSON.stringify(res.data.user))
+                            // sessionStorage.setItem("LoginUser", JSON.stringify(res.data))
+                            sessionStorage.setItem("LoginUser", JSON.stringify(res.data.user))
                             // console.log(res.data.user);
                             // console.log(res.data.menu);
                             // this.$store.commit("setMenu", res.data.menu)
