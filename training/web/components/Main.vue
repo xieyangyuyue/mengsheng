@@ -72,12 +72,17 @@
 
 
                 <template #default="scope">
+                    <!-- 插槽传递数据 
+                     mod(scope.row)传递一行
+                      @confirm="del(scope.row.id)"传递id-->
                     <!-- el-button按钮 -->
-                    <el-button size="small" type="primary">编辑</el-button>
+                    <el-button size="small" type="primary" @click="mod(scope.row)">编辑</el-button>
                     <!-- Popconfirm 气泡确认框 
                      confirm-button-text="确定" 确认文字
                      cancel-button-text="取消"  取消文字-->
-                    <el-popconfirm confirm-button-text="确定" cancel-button-text="取消" title="确定删除吗?">
+                    <!-- 插槽reference	触发 Popconfirm 显示的 HTML 元素 -->
+                    <el-popconfirm confirm-button-text="确定" cancel-button-text="取消" title="确定删除吗?"
+                        @confirm="del(scope.row.id)">
                         <!-- 插槽reference	触发 Popconfirm 显示的 HTML 元素 -->
                         <template #reference>
                             <el-button size="small" type="danger">删除</el-button>
@@ -266,45 +271,115 @@ export default {
                 ],
                 phone: [
                     { required: true, message: '手机号不能为空', trigger: "blur" },
-                    { pattern: /^2[3|4|5|6|7|8|9][0-9]\d{3}$/, message: "请输入正确的手机号", trigger: "blur" }
+                    { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号", trigger: "blur" }
                 ]
 
             }
         }
     },
     methods: {
-        //新增表单提交后端
-        save() {
-            this.$refs.form.validate((valid) => {
-                // 校验合法 表单数据合法才能提交请求
-                if (valid) {
-                    //this.form表单数据是dialog数据
-                    this.$http.post('user/save', this.form).then(res => res.data).then(res => {
-                        // console.log(res)
-                        if (res.code == 200) {
-                            this.$message({
-                                message: '新增成功!',
-                                type: 'success'
-                            });
-                            this.centerDialogVisible = false
-                        }
-                        else {
-                            this.$message({
-                                message: '操作失败!',
-                                type: 'error'
-                            });
-                        }
-                    })
+        //删除
+        del(id) {
+            console.log(id);
+            this.$http.get('user/delete?id=' + id).then(res => res.data).then(res => {
+                if (res.code == 200) {
+                    this.$message({
+                        message: '操作成功!',
+                        type: 'success'
+                    });
+                    this.loadPost()
                 }
-                // 校验不合法
                 else {
+                    this.$message({
+                        message: '操作失败!',
+                        type: 'error'
+                    });
+                }
+            })
+        },
+        //修改
+        mod(row) {
+            // console.log(row);
+            //赋值到表单
+            //展示
+            this.centerDialogVisible = true
+            // 执行异步
+            this.$nextTick(() => {
+                this.form.id = row.id
+                this.form.no = row.no
+                this.form.name = row.name
+                this.form.password = ''
+                this.form.age = row.age + ''
+                this.form.sex = row.sex + ''
+                this.form.phone = row.phone
+                this.form.roleId = row.roleId
+            })
+        },
+        //表单新增
+        doSave() {
+            this.$http.post('user/save', this.form).then(res => res.data).then(res => {
+                // console.log(res)
+                if (res.code == 200) {
+                    this.$message({
+                        message: '操作成功!',
+                        type: 'success'
+                    });
+                    this.centerDialogVisible = false
+                    this.loadPost()
+                }
+                else {
+                    this.$message({
+                        message: '操作失败!',
+                        type: 'error'
+                    });
+                }
+            })
+        },
+        //表单修改
+        doMod() {
+            this.$http.post('user/update', this.form).then(res => res.data).then(res => {
+                console.log(res)
+                if (res.code == 200) {
+                    this.$message({
+                        message: '操作成功!',
+                        type: 'success'
+                    });
+                    this.centerDialogVisible = false
+                    this.loadPost()
+                }
+                else {
+                    this.$message({
+                        message: '操作失败!',
+                        type: 'error'
+                    });
+                }
+            })
+        },
+        //表单提交
+        save() {
+            // 校验合法 表单数据合法才能提交请求
+            this.$refs.form.validate((valid) => {
+                if (valid) {
+                    //存在修改，不存在新增
+                    if (this.form.id) {
+                        this.doMod()
+                    }
+                    else {
+                        //新增表单提交后端
+                        this.doSave()
+                    }
+                } else {
                     this.$message({
                         message: '校验失败 请填写完整数据',
                         type: 'error'
                     });
+                    this.confirm_disable = false;
                     return false;
                 }
             });
+
+
+
         },
         //重置表单
         resetForm() {
