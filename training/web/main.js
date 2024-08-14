@@ -9,7 +9,7 @@ import './assets/global.css'
 import axios from 'axios'
 // 注册路由
 import router from './router'
-// import store from './store'
+import store from './store'
 //设置全局axios地址
 axios.defaults.baseURL = 'http://localhost:8091/'
 
@@ -23,7 +23,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 app.use(ElementPlus, { size: 'small' })
-// app.use(store)
+app.use(store)
 //使用路由 需在App.vue重定向<router-view></router-view>
 
 app.use(router)

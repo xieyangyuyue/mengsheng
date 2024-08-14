@@ -267,7 +267,8 @@ export default {
                             sessionStorage.setItem("LoginUser", JSON.stringify(res.data.user))
                             // console.log(res.data.user);
                             // console.log(res.data.menu);
-                            // this.$store.commit("setMenu", res.data.menu)
+                            this.$store.commit("setMenu", res.data.menu)
+
 
                             //跳转到主页
                             this.$router.replace('/Indextest')
