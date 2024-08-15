@@ -7,8 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.training.common.QueryPageParam;
 import com.training.pojo.Result;
 import com.training.pojo.User;
-import com.training.pojo.Menu;
-import com.training.service.MenuService;
 import com.training.service.UserService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +21,6 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private MenuService menuService;
     //返回所有数据
     @GetMapping("/list")
     public List<User> list() {
@@ -56,28 +52,23 @@ public class UserController {
     }
 
 
-
-
-
     //登录
     @PostMapping("/login")
     public Result login(@RequestBody User user) {
+        /**
+         * lambdaQuery
+         */
+        //后端获取账号 姓名
         //返回从数据库拿到符合条件的list
         List list = userService.lambdaQuery()
                 .eq(User::getNo, user.getNo())//匹配账号
                 .eq(User::getPassword, user.getPassword())//匹配密码
                 .list();
-        //登陆成功
         if (!list.isEmpty()) {
-            User user1 = (User) list.get(0);
-            //查出符合用户权限的功能 user1.getRoleId()
-            List menuList = menuService.lambdaQuery().like(Menu::getMenuright, user1.getRoleId()).list();
-            HashMap res = new HashMap<>();
-            res.put("user", user1);
-            res.put("menu", menuList);
-            return Result.success(res);
+            return Result.success(list.get(0));
+        } else {
+            return Result.fail();
         }
-        return Result.fail();
     }
 
     //根据no查询是否有重复用户名
