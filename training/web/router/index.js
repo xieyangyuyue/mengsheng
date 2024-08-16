@@ -37,7 +37,29 @@ const routes = [
                 },
                 component: () => import('../components/user/UserManage.vue')
             },
-
+            {
+                path: '/Priority',
+                name: 'priority',
+                meta: {
+                    title: '运输公司管理'
+                },
+                component: () => import('../components/priority/PriorityManage.vue')
+            },
+            {
+                path: '/Trainingtype',
+                name: 'trainingtype',
+                meta: {
+                    title: '运输方式管理'
+                },
+                component: () => import('../components/trainingtype/TrainingtypeManage.vue')
+            }, {
+                path: '/Trainingorder',
+                name: 'trainingorder',
+                meta: {
+                    title: '运输方式管理'
+                },
+                component: () => import('../components/trainingorder/TrainingorderManage.vue')
+            },
         ]
     }
 ];

@@ -119,7 +119,7 @@
         <!-- Dialog对话框 Dialog 弹出一个对话框
      model-value / v-model	是否显示 Dialog	boolean 
      centerDialogVisible  新增dialog是否可见-->
-        <el-dialog v-model="centerDialogVisible" title="新增" width="500" center :before-close="handleClose">
+        <el-dialog v-model="centerDialogVisible" title="提示" width="500" center :before-close="handleClose">
             <!-- 新增表单 
              form动态关联
              model	表单数据对象	
@@ -387,8 +387,9 @@ export default {
         },
         //表单新增,
         add() {
-            //展示dialog对话框
-            this.centerDialogVisible = true
+            this.form.id = '',
+                //展示dialog对话框
+                this.centerDialogVisible = true
             this.$nextTick(() => {
                 this.resetForm();
             })

@@ -7,16 +7,10 @@
          输入传入data return 再传入loadpost中的param
          @change  enter键触发-->
         <div style="margin-bottom: 5px;">
-            <el-input v-model="name" placeholder="请输入名字" suffix-icon="Search" style="width: 200px;"
+            <el-input v-model="name" placeholder="请输入运输方式" suffix-icon="Search" style="width: 200px;"
                 @change="loadPost"></el-input>
 
-            <!-- Select 选择器​
-            当选项过多时，使用下拉菜单展示并选择内容。 -->
-            <el-select v-model="sex" filterable placeholder="请选择性别" suffix-icon="User"
-                style="width: 200px;margin-left: 5px ;">
-                <el-option v-for="item in sexs" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-            </el-select>
+
             <!-- 调用loadPost查询  
             传入参数根据v-model="name" v-model="sex"中的name sex返回后端进行 -->
             <el-button type="primary" style="margin-left: 5px ;" @click="loadPost">查询</el-button>
@@ -32,42 +26,8 @@
         <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border>
             <!-- prop后的值需跟数据库字段名匹配 -->
             <el-table-column prop="id" label="Id" width="60" />
-            <el-table-column prop="no" label="账号" width="160" />
-            <el-table-column prop="name" label="姓名" width="160" />
-            <el-table-column prop="age" label="年龄" width="160" />
-            <el-table-column prop="sex" label="性别" width="160">
-
-
-
-                <!-- 插槽default 
-                 自定义列的内容-->
-                <template #default="scope">
-                    <!-- el-tag用于标记和选择 -->
-                    <!-- type	Tag 的类型 
-                 disable-transitions	是否禁用渐变动画	false-->
-                    <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
-                    <el-tag :type="scope.row.sex === 1 ? 'primary' : 'success'" disable-transition>{{ scope.row.sex ===
-                        1 ?
-                        '女' :
-                        '男'
-                        }}</el-tag>
-                </template>
-
-
-            </el-table-column>
-            <el-table-column prop="roleId" label="角色" width="160">
-
-
-                <!-- 展示角色 -->
-                <template #default="scope">
-                    <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
-                    <el-tag :type="scope.row.roleId === 0 ? 'danger' : (scope.row.roleId === 1 ? 'primary' : 'warning')"
-                        disable-transition>{{ scope.row.roleId === 0 ? '超级管理员' :
-                            (scope.row.roleId === 1 ? '管理员' : '用户') }}</el-tag>
-                </template>
-
-            </el-table-column>
-            <el-table-column prop="phone" label="电话" width="160" />
+            <el-table-column prop="name" label="运输方式" width="160" />
+            <el-table-column prop="remark" label="备注" />
             <el-table-column prop="operate" label="操作" width="165">
 
 
@@ -127,42 +87,20 @@
              Form 组件提供了表单验证的功能，
              只需为 rules 属性传入约定的验证规则，
              并将 form-Item 的 prop 属性设置为需要验证的特殊键值即可-->
+            <!-- 表单 -->
             <el-form ref="form" :rules="rules" :model="form" label-width="auto" style="max-width: 600px">
-                <!-- 账号 -->
-                <el-form-item label="账号" style="width: 60%;" prop="no">
-                    <el-input v-model="form.no" />
-                </el-form-item>
+
 
                 <!-- 名字 -->
-                <el-form-item label="名字" style="width: 60%;" prop="name">
+                <el-form-item label="运输方式" style="width: 60%;" prop="name">
                     <el-input v-model="form.name" />
                 </el-form-item>
 
-                <!-- 密码 -->
-                <el-form-item label="密码" style="width: 60%;" prop="password">
-                    <el-input v-model="form.password" />
+                <!--备注  -->
+                <el-form-item label="备注" style="width: 60%;" prop="remark">
+                    <el-input type="textarea" v-model="form.remark" />
                 </el-form-item>
-
-                <!-- 年龄 -->
-                <el-form-item label="年龄" style="width: 60%;" prop="age">
-                    <el-input v-model="form.age" />
-                </el-form-item>
-                <!-- 性别 -->
-                <el-form-item label="性别">
-                    <!-- 单选框 -->
-                    <el-radio-group v-model="form.sex">
-                        <el-radio value="0">男</el-radio>
-                        <el-radio value="1">女</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-
-                <!-- 电话 -->
-                <el-form-item label="电话" style="width: 60%;" prop="phone">
-                    <el-input v-model="form.phone" />
-                </el-form-item>
-
             </el-form>
-            <!-- 插槽footer	Dialog 按钮操作区的内容 -->
             <template #footer>
                 <div class="dialog-footer">
                     <el-button @click="centerDialogVisible = false">取消</el-button>
@@ -173,36 +111,27 @@
             </template>
         </el-dialog>
 
+
     </div>
 </template>
 
 <script>
 export default {
-    name: "AdminManage",
+    name: "TrainingtypeManage",
     data() {
-        //校验年龄 checkAge
-        let checkAge = (rule, value, callback) => {
-            if (value > 150) {
-                callback(new Error('年龄输入过大'));
-            }
-            else {
-                callback();
-            }
-        };
-
         // 校验账号的唯一性 checkDuplicate 
         let checkDuplicate = (rule, value, callback) => {
             if (this.form.id) {
                 return callback();
             }
 
-            this.$http.get("/user/findByNo?no=" + this.form.no).then(res => res.data)
+            this.$http.get("/trainingtype/findByNo?name=" + this.form.name).then(res => res.data)
                 .then(res => {
                     if (res.code != 200) {
                         callback();
                     }
                     else {
-                        callback(new Error('账号已存在'));
+                        callback(new Error('运输方式已存在'));
                     }
                 })
         };
@@ -223,57 +152,23 @@ export default {
             //input列表查询
             //绑定监控name sex
             name: '',
-            sex: '',
-            // Select 选择器​当选项过多时，
-            // 使用下拉菜单展示并选择内容。
-            sexs: [
-                {
-                    value: '0',
-                    label: '男'
-                }, {
-                    value: '1',
-                    label: '女'
-                }
-            ],
+
             //新增dialog是否可见
             centerDialogVisible: false,
             // 新增表单 form动态关联
             form: {
                 id: '',
-                no: '',
                 name: '',
-                password: '',
-                age: '',
-                phone: '',
-                sex: '0',
-                roleId: '1'
+                remark: ''
             },
 
             //表单规则校验
             rules: {
-                no: [
-                    { required: true, message: '请输入账号', trigger: 'blur' },
-                    { min: 3, max: 8, message: '长度在 3 到 8个字符', trigger: 'blur' },
+                name: [
+                    { required: true, message: '请输入运输方式', trigger: 'blur' },
+                    { min: 3, max: 20, message: '长度在 3 到 20个字符', trigger: 'blur' },
                     { validator: checkDuplicate, trigger: 'blur' }
                 ],
-                name: [
-                    { required: true, message: '请输入名字', trigger: 'blur' },
-                ],
-                password: [
-                    { required: true, message: '请输入密码', trigger: 'blur' },
-                    { min: 3, max: 8, message: '长度在 3 到 8个字符', trigger: 'blur' }
-                ],
-                age: [
-                    { required: true, message: '请输入年龄', trigger: 'blur' },
-                    { min: 1, max: 3, message: '长度在 1 到 3个位', trigger: 'blur' },
-                    { pattern: /^([1-9][0-9]*){1,3}$/, message: '年龄必须为正整数', trigger: "blur" },
-                    { validator: checkAge, trigger: 'blur' }
-                ],
-                phone: [
-                    { required: true, message: '手机号不能为空', trigger: "blur" },
-                    { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: "请输入正确的手机号", trigger: "blur" }
-                ]
-
             }
         }
     },
@@ -281,7 +176,7 @@ export default {
         //删除
         del(id) {
             console.log(id);
-            this.$http.get('user/delete?id=' + id).then(res => res.data).then(res => {
+            this.$http.get('trainingtype/delete?id=' + id).then(res => res.data).then(res => {
                 if (res.code == 200) {
                     this.$message({
                         message: '操作成功!',
@@ -306,18 +201,13 @@ export default {
             // 执行异步
             this.$nextTick(() => {
                 this.form.id = row.id
-                this.form.no = row.no
                 this.form.name = row.name
-                this.form.password = ''
-                this.form.age = row.age + ''
-                this.form.sex = row.sex + ''
-                this.form.phone = row.phone
-                this.form.roleId = row.roleId
+                this.form.remark = row.remark
             })
         },
         //表单新增
         doSave() {
-            this.$http.post('user/save', this.form).then(res => res.data).then(res => {
+            this.$http.post('trainingtype/save', this.form).then(res => res.data).then(res => {
                 // console.log(res)
                 if (res.code == 200) {
                     this.$message({
@@ -337,7 +227,7 @@ export default {
         },
         //表单修改
         doMod() {
-            this.$http.post('user/update', this.form).then(res => res.data).then(res => {
+            this.$http.post('trainingtype/update', this.form).then(res => res.data).then(res => {
                 console.log(res)
                 if (res.code == 200) {
                     this.$message({
@@ -396,8 +286,7 @@ export default {
         },
         // input查询框重置 将传入的值赋值为空
         resetParam() {
-            this.name = '',
-                this.sex = ''
+            this.name = ''
         },
         //关于分页函数 handleSizeChange，handleCurrentChange
         //改变每页条数，传值val，将pageSize改为val
@@ -416,7 +305,7 @@ export default {
         //打印所有信息(user)
         loadGet() {
             //axios实现get请求
-            this.$http.get('user/list').then(res => res.data).then(res => {
+            this.$http.get('trainingtype/list').then(res => res.data).then(res => {
                 // console.log(res);
             })
         },
@@ -424,7 +313,7 @@ export default {
         loadPost() {
             //axios实现post请求
             //实现分页查询
-            this.$http.post('user/listPage',
+            this.$http.post('trainingtype/listPage',
                 // 传入json形式的请求体 分页传入条数和页数
                 {
                     pageSize: this.pageSize,
@@ -432,8 +321,6 @@ export default {
                     //将前端监控的值传给param
                     param: {
                         name: this.name,
-                        sex: this.sex,
-                        roleId: '1'
                     }
                 }).then(res => res.data).then(res => {
                     // res => res.data过滤后端返回数据包含code，msg，data等
