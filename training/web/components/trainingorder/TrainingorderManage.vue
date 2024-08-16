@@ -10,6 +10,13 @@
             <el-input v-model="name" placeholder="请输入物品名" suffix-icon="Search" style="width: 200px;"
                 @change="loadPost"></el-input>
 
+            <el-select v-model="priority" placeholder="请选择公司" style="width: 240px;margin-left: 5px;"> <el-option
+                    v-for="item in priorityData" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
+
+            <el-select v-model="trainingtype" placeholder="请选择运输方式" style="width: 240px;margin-left: 5px;"> <el-option
+                    v-for="item in trainingtypeData" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
 
             <!-- 调用loadPost查询  
             传入参数根据v-model="name" v-model="sex"中的name sex返回后端进行 -->
@@ -102,16 +109,15 @@
                     <el-input v-model="form.name" />
                 </el-form-item>
                 <el-form-item label="公司名" style="width: 60%;" prop="priority">
-                    <el-input v-model="form.priority" />
-                    <!-- <el-select v-model="form.storage" placeholder="请选择仓库" style="width: 240px;margin-left: 5px;">
-                        <el-option v-for="item in storageData" :key="item.id" :label="item.name" :value="item.id" />
-                    </el-select> -->
+                    <el-select v-model="priority" placeholder="请选择公司" style="width: 240px;margin-left: 5px;"> <el-option
+                            v-for="item in priorityData" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="运输方式" style="width: 60%;" prop="trainingtype">
-                    <el-input v-model="form.trainingtype" />
-                    <!-- <el-select v-model="form.goodstype" placeholder="请选择物品分类" style="width: 240px;margin-left: 5px;">
-                        <el-option v-for="item in goodstypeData" :key="item.id" :label="item.name" :value="item.id" />
-                    </el-select> -->
+                    <el-select v-model="trainingtype" placeholder="请选择运输方式" style="width: 240px;margin-left: 5px;">
+                        <el-option v-for="item in trainingtypeData" :key="item.id" :label="item.name"
+                            :value="item.id" />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="重量" style="width: 60%;" prop="weight">
                     <el-input v-model="form.weight" />
@@ -167,6 +173,8 @@ export default {
             tableData: [],
             priorityData: [],
             trainingtypeData: [],
+            priority: '',
+            trainingtype: '',
             //分页所需赋值数据 
             //pageSize  pageNum total先赋值默认数据
             pageSize: 10,
@@ -182,8 +190,8 @@ export default {
             form: {
                 id: '',
                 name: '',
-                priority: '',
-                trainingtype: '',
+                // priority: '',
+                // trainingtype: '',
                 weight: '',
                 remark: '',
 
@@ -192,9 +200,15 @@ export default {
             //表单规则校验
             rules: {
                 name: [
-                    { required: true, message: '请输入运输方式', trigger: 'blur' },
+                    { required: true, message: '请输入物品', trigger: 'blur' },
                     { min: 3, max: 20, message: '长度在 3 到 20个字符', trigger: 'blur' },
                     { validator: checkDuplicate, trigger: 'blur' }
+                ],
+                priority: [
+                    { required: true, message: '请选择运输公司', trigger: 'blur' },
+                ],
+                trainingtype: [
+                    { required: true, message: '请选择运输方式', trigger: 'blur' },
                 ],
             }
         }
@@ -329,6 +343,8 @@ export default {
         // input查询框重置 将传入的值赋值为空
         resetParam() {
             this.name = ''
+            this.priority = ''
+            this.trainingtype = ''
         },
         //关于分页函数 handleSizeChange，handleCurrentChange
         //改变每页条数，传值val，将pageSize改为val
@@ -363,6 +379,8 @@ export default {
                     //将前端监控的值传给param
                     param: {
                         name: this.name,
+                        priority: this.priority + '',
+                        trainingtype: this.trainingtype + '',
                     }
                 }).then(res => res.data).then(res => {
                     // res => res.data过滤后端返回数据包含code，msg，data等
