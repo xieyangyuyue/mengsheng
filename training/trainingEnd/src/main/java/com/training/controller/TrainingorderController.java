@@ -59,6 +59,8 @@ class TrainingorderController {
         HashMap param = queryPageParam.getParam();
         //从前端传来的param的  name  sex  进行 lambdaQueryWrapper
         String name = (String) param.get("name");
+        String priority = (String) param.get("priority");
+        String trainingtype = (String) param.get("trainingtype");
 
 
         /**
@@ -74,6 +76,12 @@ class TrainingorderController {
         // 判断是否为空
         if (StringUtils.isNotBlank(name) && !"null".equals(name)) {
             lambdaQueryWrapper.like(Trainingorder::getName,name);
+        }
+        if (StringUtils.isNotBlank(priority) && !"null".equals(priority)) {
+            lambdaQueryWrapper.like(Trainingorder::getPriority,priority);
+        }
+        if (StringUtils.isNotBlank(trainingtype) && !"null".equals(trainingtype)) {
+            lambdaQueryWrapper.like(Trainingorder::getTrainingtype,trainingtype);
         }
         //封装查询结果
         IPage<Trainingorder> result = trainingorderService.page(page, lambdaQueryWrapper);
