@@ -109,12 +109,14 @@
                     <el-input v-model="form.name" />
                 </el-form-item>
                 <el-form-item label="公司名" style="width: 60%;" prop="priority">
-                    <el-select v-model="priority" placeholder="请选择公司" style="width: 240px;margin-left: 5px;"> <el-option
-                            v-for="item in priorityData" :key="item.id" :label="item.name" :value="item.id" />
+                    <!-- <el-input v-model="form.priority" /> -->
+                    <el-select v-model="form.priority" placeholder="请选择公司" style="width: 240px;margin-left: 5px;">
+                        <el-option v-for="item in priorityData" :key="item.id" :label="item.name" :value="item.id" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="运输方式" style="width: 60%;" prop="trainingtype">
-                    <el-select v-model="trainingtype" placeholder="请选择运输方式" style="width: 240px;margin-left: 5px;">
+                    <!-- <el-input v-model="form.trainingtype" /> -->
+                    <el-select v-model="form.trainingtype" placeholder="请选择运输方式" style="width: 240px;margin-left: 5px;">
                         <el-option v-for="item in trainingtypeData" :key="item.id" :label="item.name"
                             :value="item.id" />
                     </el-select>
@@ -190,8 +192,8 @@ export default {
             form: {
                 id: '',
                 name: '',
-                // priority: '',
-                // trainingtype: '',
+                priority: '',
+                trainingtype: '',
                 weight: '',
                 remark: '',
 

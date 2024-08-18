@@ -60,6 +60,14 @@ const routes = [
                 },
                 component: () => import('../components/trainingorder/TrainingorderManage.vue')
             },
+            {
+                path: '/Record',
+                name: 'record',
+                meta: {
+                    title: '记录管理'
+                },
+                component: () => import('../components/record/RecordManage.vue')
+            }
         ]
     }
 ];
