@@ -26,17 +26,17 @@ public class Trainingorder implements Serializable {
     private String name;
 
     /**
-     * 公司名
+     * 公司
      */
     private Integer priority;
 
     /**
-     * 运输方式分类
+     * 运输方式
      */
     private Integer trainingtype;
 
     /**
-     * 重量
+     * 数量
      */
     private Integer weight;
 

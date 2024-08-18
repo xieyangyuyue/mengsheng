@@ -19,7 +19,6 @@ public class RecordServiceImpl extends ServiceImpl<RecordMapper, Record>
         implements RecordService {
     @Resource
     private RecordMapper recordMapper;
-
     @Override
     public IPage listPageSelf(IPage<Record> page, Wrapper wrapper) {
         return recordMapper.listPageSelf(page, wrapper);

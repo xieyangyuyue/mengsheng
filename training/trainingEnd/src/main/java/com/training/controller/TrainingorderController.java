@@ -51,8 +51,7 @@ class TrainingorderController {
         List list = trainingorderService.lambdaQuery().eq(Trainingorder::getName,name).list();
         return !list.isEmpty() ? Result.success(list) : Result.fail();
     }
-
-    
+ 
     @PostMapping("/listPage")
     public Result listPage(@RequestBody QueryPageParam queryPageParam) {
         //打印其他信息
@@ -61,6 +60,7 @@ class TrainingorderController {
         String name = (String) param.get("name");
         String priority = (String) param.get("priority");
         String trainingtype = (String) param.get("trainingtype");
+
 
 
         /**
