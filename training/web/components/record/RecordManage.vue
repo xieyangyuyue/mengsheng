@@ -23,16 +23,42 @@
         </div>
         <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border>
             <el-table-column prop="id" label="Id" width="60" />
-            <el-table-column prop="goodsname" label="物品名" width="160" />
+            <el-table-column prop="goodsname" label="物品名" width="120" />
             <el-table-column prop="priorityname" label="公司名" width="160" />
             <el-table-column prop="trainingtypename" label="运输方式" width="160" />
 
             <el-table-column prop="username" label="申请人" width="160" />
             <el-table-column prop="adminname" label="操作人" width="160" />
-            <el-table-column prop="weight" label="重量" width="160" />
+            <el-table-column prop="weight" label="发货" width="160">
+                <!-- 插槽default 自定义列的内容-->
+                <template #default="scope">
+                    <!-- el-tag用于标记和选择 -->
+                    <!-- type	Tag 的类型 disable-transitions	是否禁用渐变动画	false-->
+                    <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
+                    <el-tag :type="scope.row.weight === 1 ? 'primary' : 'success'" disable-transition>{{
+                        scope.row.weight
+                            ===
+                            1 ?
+                            '发货' :
+                            '暂存'
+                    }}</el-tag>
+                </template> </el-table-column>
             <el-table-column prop="createtime" label="操作时间" width="160" />
             <el-table-column prop="remark" label="备注" width="160" />
         </el-table>
+
+
+        <!-- 分页处理 -->
+
+        <!-- :current-page赋值 pageNum当前页数
+         :page-size="pageSize" 每页条数
+         @size-change="handleSizeChange"  点击事件改变每页条数
+         @current-change="handleCurrentChange" 
+        -->
+        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="pageNum"
+            :page-sizes="[2, 5, 10, 20]" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
+            :total="total">
+        </el-pagination>
     </div>
 </template>
 

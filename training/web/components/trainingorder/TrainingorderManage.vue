@@ -17,27 +17,48 @@
             <el-select v-model="trainingtype" placeholder="请选择运输方式" style="width: 240px;margin-left: 5px;"> <el-option
                     v-for="item in trainingtypeData" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
-
+            <!-- Select 选择器​
+            当选项过多时，使用下拉菜单展示并选择内容。 -->
+            <el-select v-model="deliver" filterable placeholder="请选择是否发货" suffix-icon="Goods"
+                style="width: 150px;margin-left: 5px ;">
+                <el-option v-for="item in delivers" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+            </el-select>
             <!-- 调用loadPost查询  
             传入参数根据v-model="name" v-model="sex"中的name sex返回后端进行 -->
             <el-button type="primary" style="margin-left: 5px ;" @click="loadPost">查询</el-button>
             <el-button type="success" @click="resetParam">重置</el-button>
             <!-- add函数只是激发dialog对话框 展示新增表单 -->
             <el-button type="danger" @click="add">新增</el-button>
+            <el-button type="info" @click="inGoods">发货</el-button>
         </div>
 
         <!-- data数据来源于tableData 
      header-cell-style	 设置背景表头单元格的 style 的回调方法，
      也可以使用一个固定的 Object 为所有表头单元格设置一样的 Style。
      border边框-->
-        <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border>
+        <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border
+            highlight-current-row @current-change="selectCurrentChange">
             <!-- prop后的值需跟数据库字段名匹配 -->
             <el-table-column prop="id" label="Id" width="60" />
             <el-table-column prop="name" label="物品名" width="160" />
             <el-table-column prop="priority" label="公司名" width="160" :formatter="formatPriority" />
             <el-table-column prop="trainingtype" label="运输方式" width="160" :formatter="formatTrainingtype" />
-            <el-table-column prop="weight" label="重 量" width="160" />
-            <el-table-column prop="remark" label="备注" width="160" />
+            <el-table-column prop="weight" label="发货" width="160">
+                <!-- 插槽default 自定义列的内容-->
+                <template #default="scope">
+                    <!-- el-tag用于标记和选择 -->
+                    <!-- type	Tag 的类型 disable-transitions	是否禁用渐变动画	false-->
+                    <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
+                    <el-tag :type="scope.row.weight === 1 ? 'primary' : 'success'" disable-transition>{{
+                        scope.row.weight
+                            ===
+                            1 ?
+                            '发货' :
+                            '暂存'
+                    }}</el-tag>
+                </template> </el-table-column>
+            <el-table-column prop="remark" label="备注" />
 
             <el-table-column prop="operate" label="操作" width="165">
 
@@ -121,8 +142,12 @@
                             :value="item.id" />
                     </el-select>
                 </el-form-item>
-                <el-form-item label="重量" style="width: 60%;" prop="weight">
-                    <el-input v-model="form.weight" />
+                <el-form-item label="发货" style="width: 60%;" prop="weight" readonly>
+                    <!-- 单选框 -->
+                    <el-radio-group v-model="form.weight">
+                        <el-radio value="0">暂存</el-radio>
+                        <el-radio value="1">发货</el-radio>
+                    </el-radio-group>
                 </el-form-item>
 
                 <!--备注  -->
@@ -140,7 +165,39 @@
             </template>
         </el-dialog>
 
+        <!-- Dialog对话框 -->
+        <el-dialog v-model="inDialogVisible" title="提示" width="500" center :before-close="handleClose">
+            <!-- 表单 -->
+            <el-form ref="form1" :rules="rules1" :model="form1" label-width="auto" style="max-width: 600px">
 
+
+                <!-- 名字 -->
+                <el-form-item label="物品名" style="width: 60%;" prop="name">
+                    <el-input v-model="form1.name" readonly />
+                </el-form-item>
+
+                <el-form-item label="发货" style="width: 60%;" prop="weight">
+                    <!-- 单选框 -->
+                    <el-radio-group v-model="form1.weight">
+                        <el-radio value="0">暂存</el-radio>
+                        <el-radio value="1">发货</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
+                <!--备注  -->
+                <el-form-item label="备注" style="width: 60%;" prop="remark">
+                    <el-input type="textarea" v-model="form1.remark" />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="inDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="doInGoods">
+                        确定
+                    </el-button>
+                </div>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -171,12 +228,24 @@ export default {
 
 
         return {
+            user: JSON.parse(sessionStorage.getItem('LoginUser')),
             //列表数据,以数组形式接收
             tableData: [],
             priorityData: [],
             trainingtypeData: [],
+            levelData: [],
             priority: '',
             trainingtype: '',
+            deliver: '',
+            delivers: [
+                {
+                    value: '0',
+                    label: '暂存'
+                }, {
+                    value: '1',
+                    label: '发货'
+                }
+            ],
             //分页所需赋值数据 
             //pageSize  pageNum total先赋值默认数据
             pageSize: 10,
@@ -188,13 +257,23 @@ export default {
 
             //新增dialog是否可见
             centerDialogVisible: false,
+            inDialogVisible: false,
+            currentRow: {},
             // 新增表单 form动态关联
             form: {
                 id: '',
                 name: '',
                 priority: '',
                 trainingtype: '',
-                weight: '',
+                weight: '0',
+                remark: '',
+
+            },
+            form1: {
+                goods: '',
+                userid: '6',
+                adminid: '',
+                weight: '0',
                 remark: '',
 
             },
@@ -212,10 +291,60 @@ export default {
                 trainingtype: [
                     { required: true, message: '请选择运输方式', trigger: 'blur' },
                 ],
-            }
+            },
+            rules1: {
+
+            },
         }
     },
     methods: {
+        doInGoods() {
+            this.$http.post('record/save', this.form1).then(res => res.data).then(res => {
+                // console.log(res)
+                if (res.code == 200) {
+                    this.$message({
+                        message: '操作成功!',
+                        type: 'success'
+                    });
+                    this.form.weight = '0'
+                    this.inDialogVisible = false
+                    this.loadPost()
+                }
+                else {
+                    this.$message({
+                        message: '操作失败!',
+                        type: 'error'
+                    });
+                }
+            })
+        },
+        //入库
+        inGoods() {
+            if (!this.currentRow.id) {
+                this.$message({
+                    message: '请选择记录',
+                    type: 'success'
+                });
+                return;
+            }
+            this.inDialogVisible = true
+            this.$nextTick(() => {
+                this.resetInForm();
+
+            })
+            this.form1.name = this.currentRow.name
+            this.form1.goods = this.currentRow.id
+            this.form1.adminid = this.user.id
+        },
+        selectCurrentChange(val) {
+            this.currentRow = val;
+        },
+        //重置表单
+        resetInForm() {
+            this.$refs.form1.resetFields();
+        },
+
+
         formatPriority(row) {
             let temp = this.priorityData.find(item => {
                 return item.id == row.priority
@@ -347,6 +476,7 @@ export default {
             this.name = ''
             this.priority = ''
             this.trainingtype = ''
+            this.deliver = ''
         },
         //关于分页函数 handleSizeChange，handleCurrentChange
         //改变每页条数，传值val，将pageSize改为val
@@ -383,6 +513,7 @@ export default {
                         name: this.name,
                         priority: this.priority + '',
                         trainingtype: this.trainingtype + '',
+                        deliver: this.deliver + ''
                     }
                 }).then(res => res.data).then(res => {
                     // res => res.data过滤后端返回数据包含code，msg，data等
@@ -423,6 +554,18 @@ export default {
                 }
 
             })
+        },
+        loadLevel() {
+            this.$http.get('level/list').then(res => res.data).then(res => {
+                console.log(res)
+                if (res.code == 200) {
+                    this.levelData = res.data
+                }
+                else {
+                    alter('获取数据失败')
+                }
+
+            })
         }
     },
     // 1、这是我们遇到的第一个生命周期函数,表示实例完全被创建出来之前,会执行它，
@@ -436,6 +579,7 @@ export default {
         this.loadPost();
         this.loadPriority();
         this.loadTrainingtype();
+        this.loadLevel();
     }
 }
 </script>

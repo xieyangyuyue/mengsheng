@@ -396,8 +396,8 @@ export default {
         },
         // input查询框重置 将传入的值赋值为空
         resetParam() {
-            this.name = '',
-                this.sex = ''
+            this.name = ''
+            this.sex = ''
         },
         //关于分页函数 handleSizeChange，handleCurrentChange
         //改变每页条数，传值val，将pageSize改为val

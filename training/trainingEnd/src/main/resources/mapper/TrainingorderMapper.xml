@@ -15,6 +15,6 @@
 
     <sql id="Base_Column_List">
         id,name,priority,
-        trainingType,count,remark
+        trainingType,weight,remark
     </sql>
 </mapper>

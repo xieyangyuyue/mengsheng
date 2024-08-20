@@ -174,7 +174,7 @@ export default {
                 age: '',
                 phone: '',
                 sex: '0',
-                roleId: '2'
+                roleId: '1'
             }
         }
     },

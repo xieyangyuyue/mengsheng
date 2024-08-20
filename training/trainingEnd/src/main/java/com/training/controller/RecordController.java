@@ -6,11 +6,15 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.training.common.QueryPageParam;
 import com.training.pojo.Record;
+import com.training.pojo.RecordRes;
 import com.training.pojo.Result;
+import com.training.pojo.Trainingorder;
 import com.training.service.RecordService;
+import com.training.service.TrainingorderService;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 @RestController
@@ -20,6 +24,8 @@ class RecordController {
     @Resource
     private RecordService recordService;
 
+@Resource
+private TrainingorderService trainingorderService;
     @PostMapping("/listPageSelf")
 
     public Result listPageSelf(@RequestBody QueryPageParam queryPageParam) {
@@ -49,9 +55,19 @@ class RecordController {
         if (StringUtils.isNotBlank(priority) && !"null".equals(priority)) {
             QueryWrapper.like("trainingtype.id", priority);
         }
-            //封装查询结果
+        //封装查询结果
         IPage result = recordService.listPageSelf(page, QueryWrapper);
 //            IPage<Record> result = recordService.listPageSelf(page, lambdaQueryWrapper);
-            return Result.success(result.getRecords(), result.getTotal());
-        }
+        return Result.success(result.getRecords(), result.getTotal());
     }
+
+    //新增
+    @PostMapping("/save")
+    public Result save(@RequestBody RecordRes record) {
+      record.setCreatetime(LocalDateTime.now());
+      Trainingorder trainingorder=new Trainingorder();
+
+
+        return recordService.save(record) ? Result.success() : Result.fail();
+    }
+}
