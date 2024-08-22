@@ -7,14 +7,14 @@
          输入传入data return 再传入loadpost中的param
          @change  enter键触发-->
         <div style="margin-bottom: 5px;">
-            <el-input v-model="name" placeholder="请输入物品名" suffix-icon="Search" style="width: 200px;"
+            <el-input v-model="name" placeholder="请输入物品名" suffix-icon="Search" style="width: 150px;"
                 @change="loadPost"></el-input>
 
-            <el-select v-model="priority" placeholder="请选择公司" style="width: 240px;margin-left: 5px;"> <el-option
+            <el-select v-model="priority" placeholder="请选择公司" style="width: 150px;margin-left: 5px;"> <el-option
                     v-for="item in priorityData" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
 
-            <el-select v-model="trainingtype" placeholder="请选择运输方式" style="width: 240px;margin-left: 5px;"> <el-option
+            <el-select v-model="trainingtype" placeholder="请选择运输方式" style="width: 150px;margin-left: 5px;"> <el-option
                     v-for="item in trainingtypeData" :key="item.id" :label="item.name" :value="item.id" />
             </el-select>
             <!-- Select 选择器​
@@ -24,13 +24,16 @@
                 <el-option v-for="item in delivers" :key="item.value" :label="item.label" :value="item.value">
                 </el-option>
             </el-select>
+            <el-select v-model="level" placeholder="请选择状态" style="width: 150px;margin-left: 5px;"> <el-option
+                    v-for="item in levelData" :key="item.id" :label="item.name" :value="item.id" />
+            </el-select>
             <!-- 调用loadPost查询  
             传入参数根据v-model="name" v-model="sex"中的name sex返回后端进行 -->
             <el-button type="primary" style="margin-left: 5px ;" @click="loadPost">查询</el-button>
             <el-button type="success" @click="resetParam">重置</el-button>
             <!-- add函数只是激发dialog对话框 展示新增表单 -->
-            <el-button type="danger" @click="add">新增</el-button>
-            <el-button type="info" @click="inGoods">发货</el-button>
+            <el-button type="danger" @click="add">下单</el-button>
+            <el-button type="info" @click="inGoods" v-show="user.roleId !== 2">发货</el-button>
         </div>
 
         <!-- data数据来源于tableData 
@@ -58,8 +61,18 @@
                             '暂存'
                     }}</el-tag>
                 </template> </el-table-column>
-            <el-table-column prop="remark" label="备注" />
-
+            <el-table-column prop="remark" label="备注" width="160">
+                <!-- 插槽default 自定义列的内容-->
+                <template #default="scope">
+                    <!-- el-tag用于标记和选择 -->
+                    <!-- type	Tag 的类型 disable-transitions	是否禁用渐变动画	false-->
+                    <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
+                    <el-tag
+                        :type="scope.row.remark === '1' ? 'primary' : (scope.row.remark === '2' ? 'success' : 'danger')"
+                        disable-transition>{{
+                            scope.row.remark === '1' ? '急速' : (scope.row.remark === '2' ? '平衡' : '稳重')
+                        }}</el-tag>
+                </template> </el-table-column>
             <el-table-column prop="operate" label="操作" width="165">
 
 
@@ -152,7 +165,9 @@
 
                 <!--备注  -->
                 <el-form-item label="备注" style="width: 60%;" prop="remark">
-                    <el-input type="textarea" v-model="form.remark" />
+                    <el-select v-model="form.remark" placeholder="请选择状态" style="width: 150px;margin-left: 5px;">
+                        <el-option v-for="item in levelData" :key="item.id" :label="item.name" :value="item.id" />
+                    </el-select>
                 </el-form-item>
             </el-form>
             <template #footer>
@@ -246,6 +261,8 @@ export default {
                     label: '发货'
                 }
             ],
+            level: '',
+
             //分页所需赋值数据 
             //pageSize  pageNum total先赋值默认数据
             pageSize: 10,
@@ -291,13 +308,18 @@ export default {
                 trainingtype: [
                     { required: true, message: '请选择运输方式', trigger: 'blur' },
                 ],
+                remark: [
+                    { required: true, message: '请选择运输公司', trigger: 'blur' },
+                ],
             },
             rules1: {
 
             },
         }
     },
+
     methods: {
+
         doInGoods() {
             this.$http.post('record/save', this.form1).then(res => res.data).then(res => {
                 // console.log(res)
@@ -477,6 +499,7 @@ export default {
             this.priority = ''
             this.trainingtype = ''
             this.deliver = ''
+            this.level = ''
         },
         //关于分页函数 handleSizeChange，handleCurrentChange
         //改变每页条数，传值val，将pageSize改为val
@@ -513,7 +536,8 @@ export default {
                         name: this.name,
                         priority: this.priority + '',
                         trainingtype: this.trainingtype + '',
-                        deliver: this.deliver + ''
+                        deliver: this.deliver + '',
+                        remark: this.level + ''
                     }
                 }).then(res => res.data).then(res => {
                     // res => res.data过滤后端返回数据包含code，msg，data等
@@ -573,6 +597,7 @@ export default {
 
     // 3、这是遇到的第三个生命周期函数,表示 模板已经在内存中编辑完成了,但是尚未把模板渲染到 页面中，
     // 在 beforeMount 执行的时候,页面中的元素,还没有被真正替换过来,只是之前写的一些模板字符串
+
     beforeMount() {
         // 调用loadGet loadPost
         // this.loadGet();

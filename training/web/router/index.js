@@ -6,7 +6,13 @@ const routes = [
     {
         path: '/',
         name: 'login',
-        component: () => import('../components/Login.vue')
+        component: () => import('../components/Login/Login.vue')
+
+    },
+    {
+        path: '/register',
+        name: 'RegisterPage',
+        component: () => import('../components/Login/RegisterPage.vue')
     },
     {
         path: '/Indextest',
@@ -19,7 +25,12 @@ const routes = [
                 meta: {
                     title: '首页'
                 },
-                component: () => import('../components/Home.vue')
+                component: () => import('../components/Home/Home.vue')
+            },
+            {
+                path: '/edit-profile',
+                name: 'EditProfile',
+                component: () => import('../components/Home/EditProfile.vue')
             },
             {
                 path: '/Admin',
