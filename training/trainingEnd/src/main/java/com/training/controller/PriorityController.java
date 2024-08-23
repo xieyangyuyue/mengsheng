@@ -64,6 +64,7 @@ class PriorityController {
         HashMap param = queryPageParam.getParam();
         //从前端传来的param的  name  sex  进行 lambdaQueryWrapper
         String name = (String) param.get("name");
+        String remark = (String) param.get("remark");
 
 
         /**
@@ -80,9 +81,13 @@ class PriorityController {
         if (StringUtils.isNotBlank(name) && !"null".equals(name)) {
             lambdaQueryWrapper.like(Priority::getName, name);
         }
+        if (StringUtils.isNotBlank(remark) && !"null".equals(remark)) {
+            lambdaQueryWrapper.like(Priority::getRemark, remark);
+        }
         //封装查询结果
         IPage<Priority> result = priorityService.page(page, lambdaQueryWrapper);
         return Result.success(result.getRecords(), result.getTotal());
+
     }
 
 }

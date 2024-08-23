@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
 /**
@@ -29,6 +30,11 @@ public class Priority implements Serializable {
      * 备注
      */
     private String remark;
+
+    /**
+     * 
+     */
+    private Date createtime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
