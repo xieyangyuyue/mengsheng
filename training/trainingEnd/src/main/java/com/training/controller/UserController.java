@@ -62,23 +62,23 @@ public class UserController {
     //登录
     @PostMapping("/login")
     public Result login(@RequestBody User user) {
-        //返回从数据库拿到符合条件的list
-        List list = userService.lambdaQuery()
-                .eq(User::getNo, user.getNo())//匹配账号
-                .eq(User::getPassword, user.getPassword())//匹配密码
+        List<User> list = userService.lambdaQuery()
+                .eq(User::getNo, user.getNo())
+                .eq(User::getPassword, user.getPassword())
                 .list();
-        //登陆成功
         if (!list.isEmpty()) {
-            User user1 = (User) list.get(0);
-            //查出符合用户权限的功能 user1.getRoleId()
-            List menuList = menuService.lambdaQuery().like(Menu::getMenuright, user1.getRoleId()).list();
-            HashMap res = new HashMap<>();
+            User user1 = list.get(0);
+            List<Menu> menuList = menuService.lambdaQuery()
+                    .like(Menu::getMenuright, user1.getRoleId())
+                    .list();
+            HashMap<String, Object> res = new HashMap<>();
             res.put("user", user1);
             res.put("menu", menuList);
             return Result.success(res);
         }
         return Result.fail();
     }
+
 
     //根据no查询是否有重复用户名
     @GetMapping("/findByNo")

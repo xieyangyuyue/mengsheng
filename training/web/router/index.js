@@ -79,6 +79,22 @@ const routes = [
                 },
                 component: () => import('../components/record/RecordManage.vue')
             }
+            , {
+                path: '/Delivery',
+                name: 'delivery',
+                meta: {
+                    title: '配送管理'
+                },
+                component: () => import('../components/delivery/DeliveryManage.vue')
+            },
+            {
+                path: '/Driver',
+                name: 'driver',
+                meta: {
+                    title: '司机管理'
+                },
+                component: () => import('../components/driver/DriverManage.vue')
+            }
         ]
     }
 ];
