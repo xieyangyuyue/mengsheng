@@ -43,7 +43,7 @@
                             '暂存'
                     }}</el-tag>
                 </template> </el-table-column>
-            <el-table-column prop="createtime" label="操作时间" width="160" />
+            <el-table-column prop="createtime" label="操作时间" width="160" sortable />
             <el-table-column prop="remark" label="备注" width="160" />
         </el-table>
 
@@ -85,6 +85,24 @@ export default {
         }
     },
     methods: {
+        handleSort(column, prop, order) {
+            this.$http.post('priority/listPage', {
+                pageSize: this.pageSize,
+                pageNum: this.pageNum,
+                sort: { [prop]: order },
+                param: {
+                    name: this.name,
+                    remark: this.remark,
+                }
+            }).then(res => res.data).then(res => {
+                if (res.code == 200) {
+                    this.tableData = res.data;
+                    this.total = res.total;
+                } else {
+                    this.$message.error('获取数据失败');
+                }
+            });
+        },
         // 重置
         resetParam() {
             this.name = ''

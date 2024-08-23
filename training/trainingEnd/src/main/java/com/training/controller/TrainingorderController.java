@@ -61,6 +61,8 @@ class TrainingorderController {
         String priority = (String) param.get("priority");
         String trainingtype = (String) param.get("trainingtype");
         String deliver = (String) param.get("deliver");
+        String remark = (String) param.get("remark");
+
 
 
 
@@ -87,6 +89,9 @@ class TrainingorderController {
         }
         if (StringUtils.isNotBlank(deliver) && !"null".equals(deliver)) {
             lambdaQueryWrapper.like(Trainingorder::getWeight,deliver);
+        }
+        if (StringUtils.isNotBlank(remark) && !"null".equals(remark)) {
+            lambdaQueryWrapper.like(Trainingorder::getRemark,remark);
         }
         //封装查询结果
         IPage<Trainingorder> result = trainingorderService.page(page, lambdaQueryWrapper);
