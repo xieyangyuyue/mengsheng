@@ -10,10 +10,10 @@
 
     <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border>
       <el-table-column prop="id" label="Id" width="60" />
-      <el-table-column prop="name" label="司机姓名" width="160" />
+      <el-table-column prop="name" label="司机姓名" width="160" sortable />
       <el-table-column prop="licensenumber" label="驾驶证号码" />
       <el-table-column prop="phonenumber" label="电话" />
-      <el-table-column prop="licenseexpirydate" label="驾驶证过期日期" />
+      <el-table-column prop="licenseexpirydate" label="驾驶证过期日期" sortable />
       <el-table-column prop="operate" label="操作" width="165">
         <template #default="scope">
           <el-button size="small" type="primary" @click="edit(scope.row)">编辑</el-button>
@@ -91,6 +91,24 @@ export default {
     };
   },
   methods: {
+    handleSort(column, prop, order) {
+      this.$http.post('priority/listPage', {
+        pageSize: this.pageSize,
+        pageNum: this.pageNum,
+        sort: { [prop]: order },
+        param: {
+          name: this.name,
+          remark: this.remark,
+        }
+      }).then(res => res.data).then(res => {
+        if (res.code == 200) {
+          this.tableData = res.data;
+          this.total = res.total;
+        } else {
+          this.$message.error('获取数据失败');
+        }
+      });
+    },
     loadPost() {
       this.$http.post('/driver/listPage', {
         pageSize: this.pageSize,

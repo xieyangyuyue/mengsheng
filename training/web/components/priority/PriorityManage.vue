@@ -16,7 +16,7 @@
             v-loading="loading">
             <el-table-column prop="id" label="Id" width="60" />
             <el-table-column prop="name" label="公司名" width="160" sortable />
-            <el-table-column prop="createtime" label="创建时间" width="180" />
+            <el-table-column prop="createtime" label="创建时间" sortable />
             <el-table-column prop="remark" label="备注" />
             <el-table-column prop="operate" label="操作" width="165">
                 <template #default="scope">
@@ -42,8 +42,7 @@
                     <el-input v-model="form.name" />
                 </el-form-item>
                 <el-form-item label="创建时间" style="width: 60%;" prop="createtime">
-                    <el-date-picker v-model="form.createtime" type="datetime" placeholder="选择日期时间"
-                        format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss" />
+                    <el-date-picker v-model="form.createtime" type="datetime" format="yyyy-MM-dd HH:mm:ss" />
                 </el-form-item>
                 <el-form-item label="备注" style="width: 60%;" prop="remark">
                     <el-input type="textarea" v-model="form.remark" />
