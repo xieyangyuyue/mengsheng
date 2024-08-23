@@ -36,7 +36,10 @@
           <el-input v-model="form.recipientname" />
         </el-form-item>
         <el-form-item label="地址" style="width: 60%;" prop="address">
-          <el-input v-model="form.address" />
+          <el-select v-model="form.address" placeholder="请选择地址">
+            <el-option v-for="option in addressOptions" :key="option.value" :label="option.label" :value="option.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="配送日期" style="width: 60%;" prop="deliverydate">
           <el-date-picker v-model="form.deliverydate" type="datetime" format="yyyy-MM-dd HH:mm:ss" />
@@ -58,6 +61,7 @@
 
 
 
+
 <script>
 export default {
   data() {
@@ -74,14 +78,20 @@ export default {
         address: '',
         deliverydate: '',
         status: '',
-        driver: '' // 司机字段
+        driver: ''
       },
+      addressOptions: [
+        { value: 'address1', label: '地址1' },
+        { value: 'address2', label: '地址2' },
+        { value: 'address3', label: '地址3' },
+        // Add more address options here
+      ],
       rules: {
         recipientname: [
           { required: true, message: '请输入收件人姓名', trigger: 'blur' }
         ],
         address: [
-          { required: true, message: '请输入地址', trigger: 'blur' }
+          { required: true, message: '请选择地址', trigger: 'change' }
         ],
         deliverydate: [
           { required: true, message: '请选择配送日期', trigger: 'change' }
@@ -106,8 +116,6 @@ export default {
       }).then(response => {
         const { code, data, total } = response.data;
         if (code === 200) {
-          console.log(data);
-
           this.tableData = data;
           this.total = total;
         } else {
@@ -126,27 +134,15 @@ export default {
     save() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          // 请求随机司机
-          this.$http.get('/driver/random').then(response => {
-            const driver = response.data.data;
-            if (driver) {
-              this.form.driver = driver.name; // 假设司机信息包含字段 `name`
-
-              const url = this.form.id ? '/delivery/update' : '/delivery/save';
-              this.$http.post(url, this.form).then(response => {
-                if (response.data.code === 200) {
-                  this.$message.success('操作成功');
-                  this.dialogVisible = false;
-                  this.loadPost();
-                } else {
-                  this.$message.error('操作失败');
-                }
-              });
+          const url = this.form.id ? '/delivery/update' : '/delivery/save';
+          this.$http.post(url, this.form).then(response => {
+            if (response.data.code === 200) {
+              this.$message.success('操作成功');
+              this.dialogVisible = false;
+              this.loadPost();
             } else {
-              this.$message.error('无法获取司机信息');
+              this.$message.error('操作失败');
             }
-          }).catch(() => {
-            this.$message.error('获取司机信息失败');
           });
         } else {
           this.$message.error('请填写完整数据');

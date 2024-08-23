@@ -8,20 +8,18 @@
         <h1 class="login-title">胜光运输管理系统</h1>
         <el-form :model="loginForm" label-width="100px" :rules="rules" ref="loginForm">
           <!-- 账号 -->
-          <el-form-item label="账号" style="width: 80%;" prop="no">
-            <el-input type="text" v-model="loginForm.no" autocomplete="off" size="small" />
+          <el-form-item label="账号" prop="no" class="form-item">
+            <el-input type="text" v-model="loginForm.no" autocomplete="off" size="small" class="input-field" />
           </el-form-item>
           <!-- 密码 -->
-          <el-form-item label="密码" style="width: 80%;" prop="password">
+          <el-form-item label="密码" prop="password" class="form-item">
             <el-input type="password" v-model="loginForm.password" show-password autocomplete="off" size="small"
-              @change="confirm" />
+              class="input-field" />
           </el-form-item>
           <el-form-item>
             <div class="button-group">
-              <el-button type="primary" @click="confirm" :disabled="confirm_disable">登录</el-button>
-              <el-button type="danger" @click="navigateToRegister">注册</el-button>
-            </div>
-            <div class="link-group">
+              <el-button type="primary" class="oval-button" @click="confirm" :disabled="confirm_disable">登录</el-button>
+              <el-button type="danger" class="oval-button" @click="register">注册</el-button>
               <router-link to="/about-us" class="about-link">关于我们</router-link>
             </div>
           </el-form-item>
@@ -71,6 +69,9 @@ export default {
           this.confirm_disable = false;
         }
       });
+    },
+    register() {
+      this.navigateToRegister(); // Navigate to registration page
     }
   }
 }
@@ -83,15 +84,19 @@ export default {
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background-color: #f5f5f5;
+  background: linear-gradient(135deg, #a2c2e0, #f4e1d2);
+  /* Gradient background */
 }
 
 .loginDiv {
   width: 400px;
   padding: 20px;
-  border-radius: 8px;
-  background-color: #fff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  /* Slightly increased border radius */
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  /* Subtle gradient background */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  /* Softer shadow for a lifted effect */
   position: relative;
 }
 
@@ -113,29 +118,59 @@ export default {
   text-align: center;
   margin-bottom: 20px;
   font-size: 28px;
-  /* 增加字体大小 */
+  /* Increase font size */
   background: linear-gradient(45deg, #ff0081, #ff8c00, #00d2ff);
-  /* 多巴胺色系渐变 */
+  /* Gradient text color */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 5px rgba(255, 0, 130, 0.8), 0 0 10px rgba(255, 140, 0, 0.8), 0 0 15px rgba(0, 210, 255, 0.8);
-  /* 明显的阴影效果 */
+  /* Shadow effect */
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+}
+
+.el-form-item__label {
+  flex: 0 0 100px;
+  /* Set fixed width for labels */
+  text-align: right;
+  /* Align text to the right for labels */
+}
+
+.input-field {
+  border-radius: 25px;
+  /* Oval shape for input fields */
+  border: 1px solid #ccc;
+  /* Light border color */
+  padding: 10px 15px;
+  /* Adjust padding for aesthetics */
+  font-size: 14px;
+  /* Adjust font size */
+  flex: 1;
+  /* Make input field fill remaining space */
 }
 
 .button-group {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  /* Ensure buttons and link are vertically centered */
 }
 
-.link-group {
-  margin-top: 10px;
-  text-align: right;
-  /* Align the link to the right */
+.oval-button {
+  border-radius: 50px;
+  /* Create an oval shape */
+  padding: 10px 20px;
+  /* Adjust padding as needed */
+  font-size: 14px;
+  /* Adjust font size if needed */
 }
 
 .about-link {
+  margin-left: 20px;
+  /* Adjust this value as needed for exact 2cm spacing */
   font-size: 14px;
-  /* 调整字体大小 */
   color: #007bff;
   text-decoration: underline;
 }
