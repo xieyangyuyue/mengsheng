@@ -70,6 +70,7 @@ export default {
     data() {
 
         return {
+            user: JSON.parse(sessionStorage.getItem('LoginUser')),
             tableData: [],
             priorityData: [],
             trainingtypeData: [],
@@ -126,6 +127,8 @@ export default {
                         name: this.name,
                         priority: this.priority + '',
                         trainingtype: this.trainingtype + '',
+                        roleId: this.user.roleId + '',
+                        userid: this.user.id + ''
                     }
                 }).then(res => res.data).then(res => {
                     // res => res.data过滤后端返回数据包含code，msg，data等

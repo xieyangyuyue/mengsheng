@@ -182,6 +182,18 @@
 
         <!-- Dialog对话框 -->
         <el-dialog v-model="inDialogVisible" title="提示" width="500" center :before-close="handleClose">
+            <!-- 内层 -->
+            <el-dialog width="30%" title="用户选择" v-model="innerVisible" append-to-body>
+                <selectuser @doselectUser="doselectUser"></selectuser>
+                <template #footer>
+                    <div class="dialog-footer">
+                        <el-button @click="innerVisible = false">取消</el-button>
+                        <el-button type="primary" @click="confirmUser">
+                            确定
+                        </el-button>
+                    </div>
+                </template>
+            </el-dialog>
             <!-- 表单 -->
             <el-form ref="form1" :rules="rules1" :model="form1" label-width="auto" style="max-width: 600px">
 
@@ -190,7 +202,10 @@
                 <el-form-item label="物品名" style="width: 60%;" prop="name">
                     <el-input v-model="form1.name" readonly />
                 </el-form-item>
-
+                <!-- 申请人 -->
+                <el-form-item label="申请人" style="width: 60%;" prop="username">
+                    <el-input v-model="form1.username" readonly @click="selectUser" />
+                </el-form-item>
                 <el-form-item label="发货" style="width: 60%;" prop="weight">
                     <!-- 单选框 -->
                     <el-radio-group v-model="form1.weight">
@@ -217,8 +232,10 @@
 </template>
 
 <script>
+import selectuser from '../user/selectuser.vue';
 export default {
     name: "TrainingorderManage",
+    components: { selectuser },
     data() {
         // 校验账号的唯一性 checkDuplicate 
         let checkDuplicate = (rule, value, callback) => {
@@ -275,7 +292,9 @@ export default {
             //新增dialog是否可见
             centerDialogVisible: false,
             inDialogVisible: false,
+            innerVisible: false,
             currentRow: {},
+            tempUser: '',
             // 新增表单 form动态关联
             form: {
                 id: '',
@@ -319,6 +338,18 @@ export default {
     },
 
     methods: {
+        doselectUser(val) {
+            this.tempUser = val
+        },
+        confirmUser() {
+            this.form1.username = this.tempUser.name
+            this.form1.userid = this.tempUser.id
+            this.innerVisible = false
+        },
+
+        selectUser() {
+            this.innerVisible = true
+        },
 
         doInGoods() {
             this.$http.post('record/save', this.form1).then(res => res.data).then(res => {

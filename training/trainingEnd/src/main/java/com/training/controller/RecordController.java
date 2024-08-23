@@ -23,9 +23,9 @@ import java.util.HashMap;
 class RecordController {
     @Resource
     private RecordService recordService;
+    @Resource
+    private TrainingorderService trainingorderService;
 
-@Resource
-private TrainingorderService trainingorderService;
     @PostMapping("/listPageSelf")
 
     public Result listPageSelf(@RequestBody QueryPageParam queryPageParam) {
@@ -35,6 +35,9 @@ private TrainingorderService trainingorderService;
         String name = (String) param.get("name");
         String priority = (String) param.get("priority");
         String trainingtype = (String) param.get("trainingtype");
+        String roleId = (String) param.get("roleId");
+        String userid = (String) param.get("userid");
+
 
 
         Page<Record> page = new Page<>();
@@ -46,6 +49,10 @@ private TrainingorderService trainingorderService;
 
 //        QueryWrapper.apply(" record.goods = goods.id and goods.storage = storage.id and goods.goodsType = goodstype.id ");
         QueryWrapper.apply(" record.goods = trainingorder.id and trainingorder.priority = priority.id and trainingorder.trainingtype = trainingtype.id ");
+        if("2".equals(roleId)){
+//            QueryWrapper.eq(Record::getUserid(),userid);
+            QueryWrapper.apply("record.userId="+userid);
+        }
         if (StringUtils.isNotBlank(name) && !"null".equals(name)) {
             QueryWrapper.like("trainingorder.name", name);
         }
@@ -64,10 +71,11 @@ private TrainingorderService trainingorderService;
     //新增
     @PostMapping("/save")
     public Result save(@RequestBody RecordRes record) {
-      record.setCreatetime(LocalDateTime.now());
-      Trainingorder trainingorder=new Trainingorder();
-
-
+        record.setCreatetime(LocalDateTime.now());
+        Trainingorder trainingorder =trainingorderService.getById(record.getGoods());
+        trainingorder.setWeight(1);
+        //修改订单状态
+        trainingorderService.updateById(trainingorder);
         return recordService.save(record) ? Result.success() : Result.fail();
     }
 }
