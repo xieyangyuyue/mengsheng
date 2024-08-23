@@ -10,10 +10,11 @@
             <result property="address" column="address" jdbcType="VARCHAR"/>
             <result property="deliverydate" column="deliveryDate" jdbcType="DATE"/>
             <result property="status" column="status" jdbcType="VARCHAR"/>
+            <result property="driver" column="driver" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,recipientName,address,
-        deliveryDate,status
+        deliveryDate,status,driver
     </sql>
 </mapper>

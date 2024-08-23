@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
 * @author 86187
 * @description 针对表【delivery】的数据库操作Service实现
-* @createDate 2024-08-22 14:58:26
+* @createDate 2024-08-23 14:34:08
 */
 @Service
 public class DeliveryServiceImpl extends ServiceImpl<DeliveryMapper, Delivery>

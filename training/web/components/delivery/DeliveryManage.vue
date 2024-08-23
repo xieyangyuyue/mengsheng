@@ -12,7 +12,7 @@
       <el-table-column prop="address" label="地址" />
       <el-table-column prop="deliverydate" label="配送日期" />
       <el-table-column prop="status" label="状态" />
-      <el-table-column prop="driver" label="司机" width="120" /> <!-- 新增司机列 -->
+      <el-table-column prop="driver" label="司机" width="120" />
       <el-table-column prop="operate" label="操作" width="165">
         <template #default="scope">
           <el-button size="small" type="primary" @click="edit(scope.row)">编辑</el-button>
@@ -55,6 +55,8 @@
     </el-dialog>
   </div>
 </template>
+
+
 
 <script>
 export default {
@@ -104,6 +106,8 @@ export default {
       }).then(response => {
         const { code, data, total } = response.data;
         if (code === 200) {
+          console.log(data);
+
           this.tableData = data;
           this.total = total;
         } else {
@@ -141,6 +145,8 @@ export default {
             } else {
               this.$message.error('无法获取司机信息');
             }
+          }).catch(() => {
+            this.$message.error('获取司机信息失败');
           });
         } else {
           this.$message.error('请填写完整数据');
@@ -171,24 +177,26 @@ export default {
       this.loadPost();
     },
     resetForm() {
-      this.$refs.form.resetFields();
-      this.form = {
-        id: null,
-        recipientname: '',
-        address: '',
-        deliverydate: '',
-        status: '',
-        driver: ''
-      };
+      this.$nextTick(() => {
+        if (this.$refs.form) {
+          this.$refs.form.resetFields();
+        }
+        this.form = {
+          id: null,
+          recipientname: '',
+          address: '',
+          deliverydate: '',
+          status: '',
+          driver: ''
+        };
+      });
     }
-  }
-  ,
+  },
   mounted() {
     this.loadPost();
   }
 };
 </script>
-
 <style>
 .dialog-footer {
   text-align: right;

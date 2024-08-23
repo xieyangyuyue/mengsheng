@@ -1,5 +1,8 @@
 //路由跳转
 import { createRouter, createWebHistory } from 'vue-router';
+import AboutUs from '../components/AboutUs.vue';
+
+
 
 
 const routes = [
@@ -8,6 +11,11 @@ const routes = [
         name: 'login',
         component: () => import('../components/Login/Login.vue')
 
+    },
+    {
+        path: '/about-us',
+        name: 'AboutUs',
+        component: AboutUs  // 使用导入的组件
     },
     {
         path: '/register',

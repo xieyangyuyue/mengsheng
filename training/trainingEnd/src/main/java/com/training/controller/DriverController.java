@@ -43,6 +43,7 @@ public class DriverController {
     public Result delete(@RequestParam Integer id) {
         return driverService.removeById(id) ? Result.success() : Result.fail();
     }
+
     @GetMapping("/random")
     public Result getRandomDriver() {
         // 获取所有司机
@@ -58,6 +59,7 @@ public class DriverController {
 
         return Result.success(randomDriver);
     }
+
     @PostMapping("/listPage")
     public Result listPage(@RequestBody QueryPageParam queryPageParam) {
         HashMap param = queryPageParam.getParam();

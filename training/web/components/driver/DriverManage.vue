@@ -1,14 +1,18 @@
 <template>
-  <div id="app">
-    <el-input v-model="name" placeholder="请输入司机姓名" suffix-icon="el-icon-search" style="width: 200px;"
-      @change="loadPost"></el-input>
-    <el-input v-model="license" placeholder="请输入驾驶证号码" suffix-icon="el-icon-search" style="width: 200px;"
-      @change="loadPost"></el-input>
-    <el-button type="primary" @click="loadPost">查询</el-button>
-    <el-button type="success" @click="resetParam">重置</el-button>
-    <el-button type="danger" @click="add">新增</el-button>
+  <div>
+    <!-- 列表查询 -->
+    <div style="margin-bottom: 5px;">
+      <el-input v-model="name" placeholder="请输入司机姓名" suffix-icon="el-icon-search" style="width: 200px;"
+        @change="loadPost"></el-input>
+      <el-input v-model="license" placeholder="请输入驾驶证号码" suffix-icon="el-icon-search" style="width: 200px;"
+        @change="loadPost"></el-input>
+      <el-button type="primary" @click="loadPost">查询</el-button>
+      <el-button type="success" @click="resetParam">重置</el-button>
+      <el-button type="danger" @click="add">新增</el-button>
+    </div>
 
-    <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border>
+    <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border
+      v-loading="loading">
       <el-table-column prop="id" label="Id" width="60" />
       <el-table-column prop="name" label="司机姓名" width="160" sortable />
       <el-table-column prop="licensenumber" label="驾驶证号码" />
@@ -54,6 +58,7 @@
   </div>
 </template>
 
+
 <script>
 export default {
   data() {
@@ -64,6 +69,7 @@ export default {
       total: 0,
       name: '',
       license: '',
+      loading: false,
       dialogVisible: false,
       form: {
         id: null,
@@ -78,7 +84,7 @@ export default {
         ],
         licensenumber: [
           { required: true, message: '请输入驾驶证号码', trigger: 'blur' },
-          { pattern: /^1[3-9]\d{2}$/, message: '驾驶证号码格式不正确', trigger: 'blur' }
+          { pattern: /^1[3-9]\d{1}$/, message: '驾驶证号码格式不正确', trigger: 'blur' }
         ],
         phonenumber: [
           { required: true, message: '请输入电话', trigger: 'blur' },
@@ -91,25 +97,8 @@ export default {
     };
   },
   methods: {
-    handleSort(column, prop, order) {
-      this.$http.post('priority/listPage', {
-        pageSize: this.pageSize,
-        pageNum: this.pageNum,
-        sort: { [prop]: order },
-        param: {
-          name: this.name,
-          remark: this.remark,
-        }
-      }).then(res => res.data).then(res => {
-        if (res.code == 200) {
-          this.tableData = res.data;
-          this.total = res.total;
-        } else {
-          this.$message.error('获取数据失败');
-        }
-      });
-    },
     loadPost() {
+      this.loading = true;
       this.$http.post('/driver/listPage', {
         pageSize: this.pageSize,
         pageNum: this.pageNum,
@@ -122,14 +111,14 @@ export default {
         if (code === 200) {
           this.tableData = data;
           this.total = total;
-          console.log(data);
-
         } else {
           this.$message.error('获取数据失败');
         }
       }).catch(error => {
         console.error('请求失败', error);
         this.$message.error('请求失败，请检查网络或服务器状态');
+      }).finally(() => {
+        this.loading = false;
       });
     },
     add() {
@@ -174,6 +163,18 @@ export default {
         this.$message.error('请求失败，请检查网络或服务器状态');
       });
     },
+    resetForm() {
+      if (this.$refs.form) {
+        this.$refs.form.resetFields();
+      }
+      this.form = {
+        id: null,
+        name: '',
+        licensenumber: '',
+        phonenumber: '',
+        licenseexpirydate: ''
+      };
+    },
     resetParam() {
       this.name = '';
       this.license = '';
@@ -187,19 +188,6 @@ export default {
     handleCurrentChange(val) {
       this.pageNum = val;
       this.loadPost();
-    },
-    resetForm() {
-      // Ensure form reference is defined
-      if (this.$refs.form) {
-        this.$refs.form.resetFields();
-      }
-      this.form = {
-        id: '',
-        name: '',
-        licensenumber: '',
-        phonenumber: '',
-        licenseExpirydate: ''
-      };
     }
   },
   mounted() {
@@ -207,6 +195,8 @@ export default {
   }
 };
 </script>
+
+
 
 <style>
 .dialog-footer {
