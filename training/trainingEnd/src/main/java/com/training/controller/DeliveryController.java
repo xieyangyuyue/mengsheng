@@ -42,7 +42,10 @@ public class DeliveryController {
     public Result delete(@RequestParam Integer id) {
         return deliveryService.removeById(id) ? Result.success() : Result.fail();
     }
-
+    @PostMapping("/deliveryupdate")
+    public Result deliveryupdate(@RequestBody Delivery delivery) {
+        return deliveryService.updateById(delivery) ? Result.success() : Result.fail();
+    }
     @PostMapping("/listPage")
     public Result listPage(@RequestBody QueryPageParam queryPageParam) {
         //打印其他信息

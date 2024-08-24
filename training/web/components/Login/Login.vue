@@ -58,7 +58,8 @@ export default {
               this.$message({ message: '登陆成功!', type: 'success' });
               sessionStorage.setItem("LoginUser", JSON.stringify(res.data.user));
               this.$store.commit("setMenu", res.data.menu);
-              this.$router.replace('/Indextest');
+              // this.$router.replace('/Indextest');
+              this.$router.replace('/Home');
             } else {
               this.$message({ message: '校验失败 用户名或密码错误!', type: 'error' });
               this.confirm_disable = false;

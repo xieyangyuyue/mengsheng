@@ -5,8 +5,9 @@
     <el-button type="primary" @click="loadPost">查询</el-button>
     <el-button type="success" @click="resetParam">重置</el-button>
     <el-button type="danger" @click="add">新增</el-button>
-
-    <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border>
+    <el-button type="info" @click="conformDelivery" v-show="user.roleId === 2">确认订单</el-button>
+    <el-table :data="tableData" :header-cell-style="{ background: '#f2f5fc', color: '#555555' }" border
+      highlight-current-row @current-change="selectCurrentChange">
       <el-table-column prop="id" label="Id" width="60" />
       <el-table-column prop="recipientname" label="收件人" width="160" />
       <el-table-column prop="address" label="地址" />
@@ -87,6 +88,7 @@ export default {
       total: 0,
       name: '',
       dialogVisible: false,
+      currentRow: {},
       form: {
         id: '',
         recipientname: '',
@@ -121,6 +123,44 @@ export default {
     };
   },
   methods: {
+
+    //确认订单
+    conformDelivery() {
+      if (!this.currentRow.id) {
+        this.$message({
+          message: '请选择记录',
+          type: 'success'
+        });
+        return;
+      }
+      this.form.id = this.currentRow.id
+      this.form.recipientname = this.currentRow.recipientname
+      this.form.address = this.currentRow.address
+      this.form.deliverydate = this.currentRow.deliverydate
+      this.form.driver = this.currentRow.driver
+      this.form.status = 1;
+      this.$http.post('delivery/update', this.form).then(res => res.data).then(res => {
+        console.log(res)
+        if (res.code == 200) {
+          this.$message({
+            message: '操作成功!',
+            type: 'success'
+          });
+          this.centerDialogVisible = false
+          this.loadPost()
+        }
+        else {
+          this.$message({
+            message: '操作失败!',
+            type: 'error'
+          });
+        }
+      })
+
+    },
+    selectCurrentChange(val) {
+      this.currentRow = val;
+    },
     loadPost() {
       this.$http.post('/delivery/listPage', {
         pageSize: this.pageSize,

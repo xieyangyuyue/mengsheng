@@ -96,8 +96,8 @@ class RecordController {
         Driver driver=driverService.getById(randomNumber1);
         delivery.setDriver(driver.getName());
         //状态
-        int randomNumber2 = random.nextInt(2);
-        delivery.setStatus(randomNumber2);
+//        int randomNumber2 = random.nextInt(2);
+        delivery.setStatus(0);
 
 
         deliveryService.save(delivery);
