@@ -80,6 +80,7 @@
 export default {
   data() {
     return {
+      user: JSON.parse(sessionStorage.getItem('LoginUser')),
       tableData: [],
       pageSize: 10,
       pageNum: 1,
@@ -125,7 +126,9 @@ export default {
         pageSize: this.pageSize,
         pageNum: this.pageNum,
         param: {
-          name: this.name
+          name: this.name + '',
+          roleId: this.user.roleId + '',
+          username: this.user.name + ''
         }
       }).then(response => {
         const { code, data, total } = response.data;

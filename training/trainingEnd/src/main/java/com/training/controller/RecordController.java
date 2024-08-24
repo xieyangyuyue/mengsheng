@@ -90,7 +90,7 @@ class RecordController {
         Random random = new Random();
         // 生成一个0到3之间的随机整数  地址
         int randomNumber = random.nextInt(3)+1;
-        delivery.setAddress("adddress"+randomNumber);
+        delivery.setAddress("address"+randomNumber);
         //司机
         int randomNumber1 = random.nextInt(5)+1;
         Driver driver=driverService.getById(randomNumber1);

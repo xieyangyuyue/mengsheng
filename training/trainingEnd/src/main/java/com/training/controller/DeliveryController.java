@@ -49,7 +49,8 @@ public class DeliveryController {
         HashMap param = queryPageParam.getParam();
         //从前端传来的param的  name  sex  进行 lambdaQueryWrapper
         String name = (String) param.get("name");
-
+        String roleId = (String) param.get("roleId");
+        String username = (String) param.get("username");
 
         /**
          * setCurrent 设置 页数
@@ -61,6 +62,10 @@ public class DeliveryController {
 
         //按照名字查询匹配
         LambdaQueryWrapper<Delivery> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        if("2".equals(roleId)){
+            lambdaQueryWrapper.eq(Delivery::getRecipientname,username);
+//            QueryWrapper.apply("record.userId="+userid);
+        }
         // 判断是否为空
         if (StringUtils.isNotBlank(name) && !"null".equals(name)) {
             lambdaQueryWrapper.like(Delivery::getRecipientname, name);
