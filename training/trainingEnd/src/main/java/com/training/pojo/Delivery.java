@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import lombok.Data;
 
@@ -34,17 +35,17 @@ public class Delivery implements Serializable {
     /**
      * 
      */
-    private Date deliverydate;
+    private LocalDateTime deliverydate;
 
     /**
      * 
      */
-    private String status;
+    private Integer status;
 
     /**
      * 
      */
-    private Integer driver;
+    private String driver;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -11,7 +11,21 @@
       <el-table-column prop="recipientname" label="收件人" width="160" />
       <el-table-column prop="address" label="地址" />
       <el-table-column prop="deliverydate" label="配送日期" />
-      <el-table-column prop="status" label="状态" />
+      <el-table-column prop="status" label="状态">
+        <!-- 插槽default 
+                 自定义列的内容-->
+        <template #default="scope">
+          <!-- el-tag用于标记和选择 -->
+          <!-- type	Tag 的类型 
+                 disable-transitions	是否禁用渐变动画	false-->
+          <!-- :type展示图标形状颜色，差值表达式展示文字信息 -->
+          <el-tag :type="scope.row.status === 0 ? 'primary' : 'success'" disable-transition>{{ scope.row.status ===
+            0 ?
+            '运输中' :
+            '已到达'
+            }}</el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="driver" label="司机" width="120" />
       <el-table-column prop="operate" label="操作" width="165">
         <template #default="scope">

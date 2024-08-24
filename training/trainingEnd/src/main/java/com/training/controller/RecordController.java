@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.training.common.QueryPageParam;
+import com.training.pojo.*;
 import com.training.pojo.Record;
-import com.training.pojo.RecordRes;
-import com.training.pojo.Result;
-import com.training.pojo.Trainingorder;
+import com.training.service.DeliveryService;
+import com.training.service.DriverService;
 import com.training.service.RecordService;
 import com.training.service.TrainingorderService;
 import jakarta.annotation.Resource;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/record")
@@ -25,6 +26,10 @@ class RecordController {
     private RecordService recordService;
     @Resource
     private TrainingorderService trainingorderService;
+    @Resource
+    private DeliveryService deliveryService;
+    @Resource
+    private DriverService driverService;
 
     @PostMapping("/listPageSelf")
 
@@ -76,6 +81,26 @@ class RecordController {
         trainingorder.setWeight(1);
         //修改订单状态
         trainingorderService.updateById(trainingorder);
+        //配送管理
+        Delivery delivery= new Delivery();
+        delivery.setRecipientname(record.getUsername());
+//        System.out.println(record.getUsername());
+        delivery.setDeliverydate(LocalDateTime.now());
+        // 创建Random对象实例
+        Random random = new Random();
+        // 生成一个0到3之间的随机整数  地址
+        int randomNumber = random.nextInt(3)+1;
+        delivery.setAddress("adddress"+randomNumber);
+        //司机
+        int randomNumber1 = random.nextInt(5)+1;
+        Driver driver=driverService.getById(randomNumber1);
+        delivery.setDriver(driver.getName());
+        //状态
+        int randomNumber2 = random.nextInt(2);
+        delivery.setStatus(randomNumber2);
+
+
+        deliveryService.save(delivery);
         return recordService.save(record) ? Result.success() : Result.fail();
     }
 }
