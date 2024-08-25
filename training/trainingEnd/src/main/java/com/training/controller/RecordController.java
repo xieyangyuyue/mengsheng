@@ -61,11 +61,17 @@ class RecordController {
         if (StringUtils.isNotBlank(name) && !"null".equals(name)) {
             QueryWrapper.like("trainingorder.name", name);
         }
+//        if (StringUtils.isNotBlank(trainingtype) && !"null".equals(trainingtype)) {
+//            QueryWrapper.like("priority.id", trainingtype);
+//        }
+//        if (StringUtils.isNotBlank(priority) && !"null".equals(priority)) {
+//            QueryWrapper.like("trainingtype.id", priority);
+//        }
         if (StringUtils.isNotBlank(trainingtype) && !"null".equals(trainingtype)) {
-            QueryWrapper.like("priority.id", trainingtype);
+            QueryWrapper.like("trainingtype.id", trainingtype);
         }
         if (StringUtils.isNotBlank(priority) && !"null".equals(priority)) {
-            QueryWrapper.like("trainingtype.id", priority);
+            QueryWrapper.like("priority.id", priority);
         }
         //封装查询结果
         IPage result = recordService.listPageSelf(page, QueryWrapper);
